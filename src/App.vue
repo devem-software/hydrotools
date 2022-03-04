@@ -12,7 +12,8 @@ import HelloWorld from '@/components/HelloWorld.vue'
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/meteorology">Meteorology</RouterLink>
+        <RouterLink to="/meteorology">Statitics</RouterLink>
       </nav>
     </div>
   </header>
@@ -29,6 +30,8 @@ import HelloWorld from '@/components/HelloWorld.vue'
   padding: 2rem;
 
   font-weight: normal;
+  overflow: hidden;
+  height: 100%;
 }
 
 header {

@@ -8,6 +8,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "firebase": "^9.6.7",
     "pinia": "^2.0.11",
     "vue": "^3.2.31",
     "vue-router": "^4.0.12"
@@ -19,6 +20,7 @@
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^8.2.0",
     "prettier": "^2.5.1",
+    "sass": "^1.49.9",
     "vite": "^2.8.4"
   }
 }

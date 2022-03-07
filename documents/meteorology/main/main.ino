@@ -11,6 +11,7 @@
 // ==================== Librerias para la creacion de un servidor web
 #include <DNSServer.h>
 #include <ESP8266WebServer.h >
+#include <ESP8266mDNS.h>
 #include <WiFiManager.h>
 
 
@@ -18,15 +19,6 @@
 #include <FirebaseESP8266.h>    // Firebase para ESP8266
 #include <addons/TokenHelper.h> // Generacion de token de acceso
 #include <addons/RTDBHelper.h>
-
-
-// ==================== L19 - CIUDAD BOLIVAR
-// const char* ssid =  "ALL-BLACKS-NZ"; // Ingrese el nombre de la red WiFi
-// const char* password =  "80250114";  // Ingrese la clave de la red WiFi
-
-// ==================== L4 - SANTA FE
-// #define WIFI_SSID  "DANIEL P"   // Ingrese el nombre de la red WiFi
-// #define WIFI_PASS  "3214497681" // Ingrese la clave de la red WiFi
 
 
 // ==================== Datos conexion API ThingSpeak
@@ -42,7 +34,7 @@
 
 // ================================================================================= //
 //   Para usar la base de datos de google debe solicitar la creacion del usuario a   //
-//   efmarroquinb@udistrital.edu.co, enviando su correo, y datos del proyecto        // 
+//   efmarroquinb@udistrital.edu.co, enviando su correo, y datos del proyecto        //
 // ================================================================================= //
 
 
@@ -59,7 +51,7 @@ DHT dht(DHTPIN, DHTTYPE);   // Instaciacion de la clase para el Sensor DHT
 
 // ==================== Configuracion placa ESP8266
 #define ESP8266_LED 16  // Define el led a manupilar en la placa ESP8266
-
+ESP8266WebServer server(80);
 
 // ==================== Conexión Wifi-Servidor
 WiFiClient client;
@@ -73,35 +65,63 @@ FirebaseAuth auth;
 FirebaseConfig config;
 unsigned long sendDataPrevMillis = 0;
 
+// ==================== Inicializacion de variables
+float t = 0.0;
+float h = 0.0;
+int d = 10000;
+String dataJ = "";
 
 void setup()
 {
 
-
   pinMode(ESP8266_LED, OUTPUT);   // Configuracion led de la placa ESP8266
 
   timeClient.begin();
-  timeClient.setTimeOffset(-3600*5);  // Define fecha y hora segun uso horario
-                                      // Ajustado en segundos * El uso horario
-                                      // GMT+1 = 3600*1
-                                      // GMT+8 = 3600*8
-                                      // GMT-1 = 3600*(-1)
-                                      // GMT   = 3600*0
+  timeClient.setTimeOffset(-3600 * 5); // Define fecha y hora segun uso horario
+  // Ajustado en segundos * El uso horario
+  // GMT+1 = 3600*1
+  // GMT+8 = 3600*8
+  // GMT-1 = 3600*(-1)
+  // GMT   = 3600*0
 
-  WiFi.mode(WIFI_STA);                // Inicia la placa ESP8266 en modo STATION
+  WiFi.mode(WIFI_STA);                // Inicia la placa ESP8266 en modo
+  // STATION       = WIFI_STA
+  // ACCESS POINT  = WIFI_AP
   // WiFi.begin(WIFI_SSID, WIFI_PASS);
-  
-  Serial.begin(9600);
+
+  Serial.begin(115200);
   Serial.setDebugOutput(true);
 
   WiFiManager wm;
   wm.autoConnect("MeteoLab");   // Red WiFi creada por la placa ESP8266
-                                // Punto en donde se tiene que buscar el acceso
-                                // para que la lectura inicie
-  
-  Serial.println("// ============= WiFi connected\n");
+  // Punto en donde se tiene que buscar el acceso
+  // para que la lectura inicie
 
-  // ============= Coneccion a FireBase 
+  Serial.println("// ============= WiFi connected\n");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  if (MDNS.begin("esp8266")) { Serial.println("MDNS responder started"); }
+
+
+  // ============= Inicializacion del servidor local
+  server.on("/", handle_OnConnect);
+  server.on("/temp", []() { server.send(200, "text/plain", String(t).c_str()); });
+  server.on("/humi", []() { server.send(200, "text/plain", String(h).c_str()); });
+
+  dataJ += "{ 't': '";
+  dataJ += String(t);
+  dataJ += "' , 'h' : '";
+  dataJ += String(h);
+  dataJ += "'}";
+
+  server.on("/data", []() { server.send(200, "application/json", String(dataJ).c_str()); });
+
+  server.onNotFound(handle_NotFound);
+  server.begin();
+
+
+  // ============= Coneccion a FireBase
   config.api_key = DB_API_KEY;
   config.database_url = DB_HOST;
   config.token_status_callback = tokenStatusCallback;
@@ -113,18 +133,22 @@ void setup()
   Firebase.reconnectWiFi(true);
   Firebase.setDoubleDigits(5);
 
-  // ============= Inicio de trabajo del sensor DHT11 
+
+  // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
+
 }
 
 void loop()
 {
+  
 
   digitalWrite(ESP8266_LED, LOW);   // Enciende el led de la placa ESP8266
-  
+
   // ============= Toma de lecturas del sensor DHT
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
+  h = dht.readHumidity();
+  t = dht.readTemperature();
+  
 
   if (isnan(h) || isnan(t))
   {
@@ -135,18 +159,15 @@ void loop()
   {
     String postStr = THINK_KEY;
 
-    // ============= Creacion del nodo con una marca de tiempo para almacenar 
+    // ============= Creacion del nodo con una marca de tiempo para almacenar
     // ============= la nformacion en la base de datos de FireBase
     timeClient.update();
     unsigned long epochTime = timeClient.getEpochTime();
     String nodePath = (String)DB_NODE + "/" + String(epochTime);
 
-    delay(10);
     Serial.println("\n// ===========================================");
     Serial.println((String)"Sending temperature (°C): " + String(t));
     Serial.println((String)"Sending humidity     (%): " + String(h));
-
-    delay(50);
 
     if (Firebase.ready() && millis() - sendDataPrevMillis > 1500 || sendDataPrevMillis == 0) {
       Serial.println("\n// ============= Saving in Firebase");
@@ -160,8 +181,6 @@ void loop()
     postStr += "&field2=";
     postStr += String(h);
     postStr += "\r\n\r\n";
-
-    delay(50);
 
     // ==================== Creacion de cabeceras REST para el envio de la informacion
     // ==================== a la pagina de thinkspeak.com
@@ -180,11 +199,113 @@ void loop()
 
   client.stop();
   digitalWrite(ESP8266_LED, HIGH);  // Apaga el led de la placa ESP8266
+
+  server.handleClient();
+  MDNS.update();
+
+  delay(d); // Tiempo de retraso entre las lecturas
+  // Se recomiendan minimo 10000 milisegundos entre lecturas
+  // pero para no saturar la base de datos se recomiendan
+  // lecturas entre 30000 milisegundos y 120000 milisegundos
+}
+
+void handle_OnConnect() {
+  server.send(200, "text/html", SendHTML(t, h));
+}
+
+void handle_NotFound() {
+  server.send(404, "text/plain", "Opps! regrese a la pagina anterior");
+}
+
+//
+String SendHTML(float temp, float humi) {
+  String tpl = "<!DOCTYPE html>";
+  tpl += "<html lang='es'>";
+  tpl += "<head>";
+  //  tpl += "<meta http-equiv='refresh' content='5' >";
+  tpl += "<meta charset='UTF-8'> <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>";
+  tpl += "<title>MeteoLab - UD</title>";
+  tpl += "<link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600' rel='stylesheet'>";
+  tpl += "<link rel='stylesheet' href='https://site-assets.fontawesome.com/releases/v6.0.0/css/all.css'>";
+  tpl += "<style>";
+  tpl += "*{margin:0;padding:0;box-sizing:border-box;transition:all 0.2s linear}";
+  tpl += "html{font-family:'Open Sans', sans-serif, verdana;font-size:16px;height:100vh;overflow:hidden}";
+  tpl += "body{display:flex;height:100vh;width:100vw;align-items:center;color:#6a6a6a;flex-direction:column;justify-content:space-evenly}";
+  tpl += ".webpage{display:flex;flex-direction:column;justify-content:center;align-items:center;width:calc(100% - 8rem)}";
+  tpl += ".webpage--title{margin-bottom:4rem;font-weight:900}";
+  tpl += ".data{display:flex;flex-direction:column;align-items:center;width:100%;font-size:1.5rem;margin-bottom:2rem;padding:1.5rem;border-radius:0.5rem;justify-content:center;box-shadow:0 5px 9px -4px}";
+  tpl += "@media screen and (min-width: 380px){.data{flex-direction:row} }";
+  tpl += ".data--icon{font-size:4rem;flex:1}";
+  tpl += ".data--text{flex:2;font-size:1.5rem;margin-left:0.5rem;text-align:center}";
+  tpl += "@media screen and (max-width: 600px){.data--text{display:none} }";
+  tpl += ".data--value{text-align:right;font-weight:900;display:flex}";
+  tpl += ".data--tag{width:2rem;flex:1;display:inline-flex;justify-content:end}";
+  tpl += ".temp{color:#f57f17}";
+  tpl += ".humi{color:#2979ff}";
+  tpl += ".button { background: #2E7D32; color: white; padding: 1rem; border-radius: 0.5rem; border: none; cursor: pointer; }";
+  tpl += "</style>";
+
+  tpl += "</head>";
+  tpl += "<body>";
+  tpl += "<div id='webpage' class='webpage'>";
+  tpl += "<h1 class='webpage--title'>MeteoLab - UD</h1>";
+  tpl += "<div class='data'>";
+  tpl += "<div class='data--icon fa-2x fad fa-temperature-sun temp'></div>";
+  tpl += "<div class='data--text'>Temperatura</div>";
+  tpl += "<div class='data--value temp'>";
+  tpl += "<span id='temp'>";
+  tpl += (float)temp;
+  tpl += "</span>";
+  tpl += "<span class='data--tag'>°C</span>";
+  tpl += "</div>";
+  tpl += "</div>";
+  tpl += "";
+  tpl += "<div class='data'>";
+  tpl += "<div class='data--icon fa-2x fad fa-hand-holding-water humi'></div>";
+  tpl += "<div class='data--text'>Humedad</div>";
+  tpl += "<div class='data--value humi'>";
+  tpl += "<span id='humi'>";
+  tpl += (float)humi;
+  tpl += "</span>";
+  tpl += "<span class='data--tag'>%</span>";
+  tpl += "</div>";
+  tpl += "</div>";
+  tpl += "<div class='data button' id='refresh'> <div class='data--icon fa-3x fad fa-arrows-rotate'></div> </div>";
+  tpl += "</div>";
+  tpl += "<div>";
+  tpl += "Creado por Edwin Marroquin";
+  tpl += "</div>";
+  tpl += "</body>";
+  tpl += "\n";
   
-  delay(30000); // Tiempo de retraso entre las lecturas
-                // Se recomiendan minimo 10000 milisegundos entre lecturas
-                // pero para no saturar la base de datos se recomiendan 
-                // lecturas entre 30000 milisegundos y 120000 milisegundos
+  tpl += "<script>\n";
+  tpl += "setInterval(UpdateDoc('humi'),";
+  tpl += (int)d;
+  tpl += ");\n";
+  tpl += "setInterval(UpdateDoc('temp'),";
+  tpl += (int)d;
+  tpl += ");\n";
+  tpl += "function UpdateDoc(page) {\n";
+    tpl += "console.log('Updating ' + page);\n";
+    tpl += "var xhttp = new XMLHttpRequest();\n";
+    tpl += "xhttp.onreadystatechange = async function () {\n";
+      tpl += "if (this.readyState == 4 && this.status == 200) {\n";
+        tpl += "document.getElementById(page).innerHTML= await this.responseText;\n";
+      tpl += "}\n";
+    tpl += "};\n";
+    tpl += "xhttp.open('GET', '/' + page, true);\n";
+    tpl += "xhttp.send();\n";
+    tpl += "console.log('Update ' + page);\n";
+  tpl += "}\n";
+  tpl += "document.getElementById('refresh').addEventListener('click', function () {\n";
+  tpl += "console.log('Refreshing');\n";
+  tpl += "UpdateDoc('humi');\n";
+  tpl += "UpdateDoc('temp');\n";
+  tpl += "})\n";
+  tpl += "</script>\n";
+
+  tpl += "</html>";
+  return tpl;
 }
 
 // TODO:

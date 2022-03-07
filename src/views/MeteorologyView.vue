@@ -1,30 +1,44 @@
 <template>
-  <div class="data-main">
-    <code>
-        <pre>{{ Object.values(items).length }}</pre>
-    </code>
-    <pre v-for="(item, itemKey) in items" :key="itemKey">
-        {{ itemKey }}
-            <p> temperatura : {{ item[0] }} </p>
-            <p> humedad : {{ item[1] }} </p>
-        <!-- <p v-for='(i,k) in item' :key='k'>{{ new Date(parseInt(itemKey)).toLocaleString() }}: {{ i }}</p> -->
-        </pre>
-  </div>
+  <h1>Vue 3 and Fetch Example</h1>
+
+  <ul>
+    <li v-for="(post, k) in state.data" :key="k">
+      {{ parseFloat(post["field1"]).toFixed(2) }}
+      {{ parseFloat(post["field2"]).toFixed(2) }}
+    </li>
+  </ul>
+  <p v-if="state.loading">Espere un momento . . .</p>
 </template>
+
 <script>
 import { db } from "../db.js";
 import * as firebase from "firebase/database";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive } from "vue";
 
 export default {
+  name: "MeteorologyPage",
+  props: {},
   setup() {
-    let items = [];
+    const state = reactive({
+      data: [],
+      info: [],
+      loading: true,
+    });
 
-    const rf = firebase.    ref(db, "/edwin-marroquin");
+    onMounted(async () => {
+      setInterval(async () => {
+        const data = await fetch(
+          "https://api.thingspeak.com/channels/1662545/feeds.json"
+        );
+        console.log(data)
+        state.data = await data.json();
+        state.info = state.data.channel;
+        state.data = state.data.feeds;
+        state.loading = false;
+      }, 5000);
+    });
 
-    firebase.onValue(rf, (snapshot) => items = ref(snapshot.val()));
-
-    return { items };
+    return { state };
   },
 };
 </script>

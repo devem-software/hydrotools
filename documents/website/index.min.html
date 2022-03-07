@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>MeteoLab - UD</title><link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600" rel="stylesheet"><link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.0.0/css/all.css" crossorigin="anonymous"><style>*{margin:0;padding:0;box-sizing:border-box}html{font-family:'Open Sans',sans-serif,verdana;font-size:16px;height:100vh;overflow:hidden}body{display:flex;height:100vh;width:100vw;align-items:center;color:#6a6a6a;flex-direction:column;justify-content:space-evenly}.webpage{display:flex;flex-direction:column;justify-content:center;align-items:center;width:calc(100% - 8rem)}.webpage--title{margin-bottom:4rem;font-weight:900}.data{display:flex;align-items:center;width:100%;font-size:1.5rem;margin-bottom:2rem;padding:1.5rem;border-radius:.5rem;justify-content:center;box-shadow:0 5px 9px -4px}.data--icon{font-size:4rem;flex:1}.data--text{flex:2;font-size:1.5rem;margin-left:.5rem}.data--value{width:8rem;text-align:right;font-weight:900}.data--tag{width:2rem;flex:1;display:inline-flex;justify-content:end}.temp{color:#f57f17}.humi{color:#2979ff}</style><script>(() => {
+            setInterval(() => {
+                let xh = new XMLHttpRequest();
+                xh.onreadystatechange = () => {
+                    if (this.readyState == 4 && this.status ==
+                        200) {
+                        document.querySelector('#webpage')
+                            .innerHTML = this.responseText;
+                    }
+                    xh.open('GET', '/', true);
+                    xh.send();
+                }
+            }, 1000)
+        })()</script></head><body><div id="webpage" class="webpage"><h1 class="webpage--title">MeteoLab - UD</h1><div class="data"><div class="data--icon fa-2x fad fa-temperature-sun temp"></div><div class="data--text">Temperatura</div><div class="data--value temp">TEMP <span class="data--tag">°C</span></div></div><div class="data"><div class="data--icon fa-2x fad fa-hand-holding-water humi"></div><div class="data--text">Humedad</div><div class="data--value humi">HUMI <span class="data--tag">%</span></div></div></div><div>Creado por Edwin Marroquin</div></body></html>

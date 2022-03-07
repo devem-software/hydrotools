@@ -4,13 +4,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --port 5050",
+    "preview": "vite preview --port 5050 --host localhost",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "chart.js": "^3.7.1",
     "firebase": "^9.6.7",
     "pinia": "^2.0.11",
     "vue": "^3.2.31",
+    "vue-chartjs": "^3.5.1",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {

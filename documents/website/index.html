@@ -2,29 +2,26 @@
 <html lang='es'>
 
 <head>
-    <meta charset='utf-8'>
-    <meta content='text/html; X-Content-Type-Options=nosniff'
-        http-equiv='Content-Type' />
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <meta charset='UTF-8'>
+    <meta http-equiv="refresh" content="300">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
     <title>MeteoLab - UD</title>
-
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600'
-        rel='stylesheet'>
-    <link rel='stylesheet'
-        href='https://site-assets.fontawesome.com/releases/v6.0.0/css/all.css'>
+    <link href='https://fonts.googleapis.com/css?family=Outfit:100,300,800 rel=' stylesheet'>
+    <link rel='stylesheet' href='https://site-assets.fontawesome.com/releases/v6.0.0/css/all.css'>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: all .2s linear;
+            transition: all 0.2s linear
         }
 
         html {
-            font-family: 'Open Sans', sans-serif, verdana;
+            font-family: 'Outfit', sans-serif, verdana;
             font-size: 16px;
             height: 100vh;
-            overflow: hidden
+            overflow: hidden;
+            background: #282828
         }
 
         body {
@@ -32,9 +29,9 @@
             height: 100vh;
             width: 100vw;
             align-items: center;
-            color: #6a6a6a;
+            color: #fafafa;
             flex-direction: column;
-            justify-content: space-evenly
+            justify-content: space-evenly;
         }
 
         .webpage {
@@ -42,12 +39,14 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: calc(100% - 8rem)
+            width: calc(100% - 8rem);
+            max-width: 32rem;
         }
 
         .webpage--title {
             margin-bottom: 4rem;
-            font-weight: 900
+            font-weight: 900;
+            color: #B2FF59;
         }
 
         .data {
@@ -58,14 +57,15 @@
             font-size: 1.5rem;
             margin-bottom: 2rem;
             padding: 1.5rem;
-            border-radius: .5rem;
+            border-radius: 0.5rem;
             justify-content: center;
-            box-shadow: 0 5px 9px -4px
+            box-shadow: 0 5px 9px -4px #000000;
+            background: #363636;
         }
 
         @media screen and (min-width: 380px) {
             .data {
-                flex-direction: row;
+                flex-direction: row
             }
         }
 
@@ -77,21 +77,20 @@
         .data--text {
             flex: 2;
             font-size: 1.5rem;
-            margin-left: .5rem;
-            text-align: center;
+            margin-left: 0.5rem;
+            text-align: center
         }
 
         @media screen and (max-width: 600px) {
             .data--text {
-                display: none;
+                display: none
             }
         }
-
 
         .data--value {
             text-align: right;
             font-weight: 900;
-            display: flex;
+            display: flex
         }
 
         .data--tag {
@@ -102,18 +101,13 @@
         }
 
         .temp {
-            color: #f57f17
+            color: #FFD740
         }
 
         .humi {
             color: #2979ff
         }
-
-        .button { background: #2E7D32; color: white;  }
     </style>
-
-
-
 </head>
 
 <body>
@@ -121,45 +115,48 @@
         <h1 class='webpage--title'>MeteoLab - UD</h1>
         <div class='data'>
             <div class='data--icon fa-2x fad fa-temperature-sun temp'></div>
-            <div class='data--text'>Temperatura</div>
+            <div class='data--text'>Temperature</div>
             <div class='data--value temp'>
-                <span id='temp'>%TEMP%</span>
+                <span id='temp'>
+                    LOADING
+                </span>
                 <span class='data--tag'>°C</span>
             </div>
         </div>
-
         <div class='data'>
             <div class='data--icon fa-2x fad fa-hand-holding-water humi'></div>
-            <div class='data--text'>Humedad</div>
+            <div class='data--text'>Humidity</div>
             <div class='data--value humi'>
-                <span id='humi'>%HUMI%</span>
+                <span id='humi'>
+                    LOADING
+                </span>
                 <span class='data--tag'>%</span>
             </div>
         </div>
-        <div class="data button" id="refresh"> <div class="data--icon fa-3x fad fa-arrows-rotate"></div> </div>
     </div>
     <div>
-        Creado por Edwin Marroquin
+        By Edwin Marroquín <i class='fa-lg fad fa-coffee-pot' style='color: #FF6E40;margin-left: 0.5rem;'></i>
     </div>
 </body>
 <script>
-    setInterval(UpdateDoc('humi'), 1000);
-    setInterval(UpdateDoc('temp'), 1000);
+    (function () {
+        setInterval(UpdateDoc, 10000)
+    })()
 
-    function UpdateDoc(page) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) document
-                .getElementById(page).innerHTML = this.responseText
-        };
-        xhttp.open("GET", "/" + page, true);
-        xhttp.send();
+    async function UpdateDoc() {
+
+        await fetch('/data', {
+                method: 'GET'
+            }, 60000)
+            .then(async res => await res.json())
+            .then(async data => {
+                const d = data
+                document.getElementById('temp').innerHTML = ((data.t) != undefined ? await parseFloat(data
+                    .t).toFixed(2) : '...')
+                document.getElementById('humi').innerHTML = ((data.h) != undefined ? await parseFloat(data
+                    .h).toFixed(2) : '...')
+            })
     }
-
-    document.getElementById("refresh").addEventListener("click", function () {
-        UpdateDoc('humi');
-        UpdateDoc('temp');
-    });
 </script>
 
 </html>

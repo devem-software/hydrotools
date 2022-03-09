@@ -16,6 +16,11 @@
             transition: all 0.2s linear
         }
 
+        a {
+            text-decoration: none;
+            color: #B2FF59;
+        }
+
         html {
             font-family: 'Outfit', sans-serif, verdana;
             font-size: 16px;
@@ -34,19 +39,47 @@
             justify-content: space-evenly;
         }
 
-        .webpage {
+
+        header {
+            font-weight: 900;
+            color: #B2FF59;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 1rem;
+            background: #363636;
+            box-shadow: 0 -4px 9px 4px #000000;
+        }
+
+        header span {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+            flex: 1;
+            text-align: center;
+        }
+
+        header span:nth-child(2) {
+            margin-bottom: 1rem;
+        }
+
+        header span.u {
+            color: #eb0b00;
+        }
+
+        header span.d {
+            color: #f9dc25;
+        }
+
+        main {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             width: calc(100% - 8rem);
             max-width: 32rem;
-        }
-
-        .webpage--title {
-            margin-bottom: 4rem;
-            font-weight: 900;
-            color: #B2FF59;
+            flex:1;
+            margin: 1rem;
         }
 
         .data {
@@ -55,7 +88,7 @@
             align-items: center;
             width: 100%;
             font-size: 1.5rem;
-            margin-bottom: 2rem;
+            margin: 1rem 0;
             padding: 1.5rem;
             border-radius: 0.5rem;
             justify-content: center;
@@ -63,16 +96,22 @@
             background: #363636;
         }
 
+        .data--icon {
+            font-size: 4rem;
+            flex: 1;
+            margin-bottom: 1rem;
+        }
+
         @media screen and (min-width: 380px) {
             .data {
                 flex-direction: row
             }
+
+            .data--icon {
+                margin-bottom: 0rem;
+            }
         }
 
-        .data--icon {
-            font-size: 4rem;
-            flex: 1
-        }
 
         .data--text {
             flex: 2;
@@ -107,12 +146,38 @@
         .humi {
             color: #2979ff
         }
+
+        footer {
+            margin-top: auto;
+            font-size: .8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #363636;
+            width: 100%;
+            padding: .5rem;
+            box-shadow: 0 4px 9px 4px #000000;
+
+        }
+
+        footer div {
+            margin-bottom: .25rem;
+        }
+
+        footer div:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 
 <body>
-    <div id='webpage' class='webpage'>
-        <h1 class='webpage--title'>MeteoLab - UD</h1>
+    <header class='webpage--title'>
+        <span class='u'>UNIVERSIDAD</span>
+        <span class='d'>DISTRITAL</span>
+        <span class='em'>Estación</span>
+        <span class='em'>Meteorológica</span>
+    </header>
+    <main>
         <div class='data'>
             <div class='data--icon fa-2x fad fa-temperature-sun temp'></div>
             <div class='data--text'>Temperature</div>
@@ -133,10 +198,20 @@
                 <span class='data--tag'>%</span>
             </div>
         </div>
-    </div>
-    <div>
-        By Edwin Marroquín <i class='fa-lg fad fa-coffee-pot' style='color: #FF6E40;margin-left: 0.5rem;'></i>
-    </div>
+    </main>
+
+    <footer>
+        <div>
+            Created by Edwin Marroquín with much <i class='fa-lg fad fa-coffee-pot'
+                style='color: #FF6E40;margin-left: 0.5rem;'></i>
+        </div>
+        <div>
+            For more information go to repository project <a href="" class="href">here</a>
+        </div>
+        <div>
+            or email me to <a href='mailto:devem.software@gmail.com'>devem.sofware@gmail.com</a>
+        </div>
+    </footer>
 </body>
 <script>
     (function () {

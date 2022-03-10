@@ -3,17 +3,18 @@
 
 <head>
     <meta charset='UTF-8'>
-    <meta http-equiv="refresh" content="300">
-    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no'>
+    <meta name='viewport'
+        content='width=device-width, initial-scale=1.0, user-scalable=no'>
     <title>MeteoLab - UD</title>
-    <link href='https://fonts.googleapis.com/css?family=Outfit:100,300,800 rel=' stylesheet'>
-    <link rel='stylesheet' href='https://site-assets.fontawesome.com/releases/v6.0.0/css/all.css'>
+    <link href='https://fonts.googleapis.com/css?family=Outfit:100,300,800 rel='
+        stylesheet'>
+    <link rel='stylesheet'
+        href='https://site-assets.fontawesome.com/releases/v6.0.0/css/all.css'>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: all 0.2s linear
         }
 
         a {
@@ -21,41 +22,29 @@
             color: #B2FF59;
         }
 
+        html,
+        body {
+            max-height: 100vh;
+            height: 100%;
+        }
+
         html {
             font-family: 'Outfit', sans-serif, verdana;
             font-size: 16px;
-            height: 100vh;
-            overflow: hidden;
-            background: #282828
+            background: #333
         }
 
         body {
             display: flex;
-            height: 100vh;
-            width: 100vw;
-            align-items: center;
-            color: #fafafa;
+            color: #eee;
             flex-direction: column;
-            justify-content: space-evenly;
         }
 
-
-        header {
-            font-weight: 900;
-            color: #B2FF59;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            padding: 1rem;
-            background: #363636;
-            box-shadow: 0 -4px 9px 4px #000000;
-        }
 
         header span {
             margin: 0;
             padding: 0;
             line-height: 1;
-            flex: 1;
             text-align: center;
         }
 
@@ -74,67 +63,67 @@
         main {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: calc(100% - 8rem);
-            max-width: 32rem;
-            flex:1;
-            margin: 1rem;
-        }
-
-        .data {
-            display: flex;
-            flex-direction: column;
             align-items: center;
             width: 100%;
+            padding: 1rem;
+            overflow: hidden;
+            overflow-y: scroll;
+        }
+
+
+        .dt {
+            display: flex;
+            align-items: center;
+            width: 80%;
+            max-width: 32rem;
+            min-width: 15rem;
             font-size: 1.5rem;
             margin: 1rem 0;
             padding: 1.5rem;
-            border-radius: 0.5rem;
-            justify-content: center;
-            box-shadow: 0 5px 9px -4px #000000;
-            background: #363636;
+            border-radius: .2rem;
+            box-shadow: 0 5px 9px -4px #000;
+            background: #444;
         }
 
-        .data--icon {
-            font-size: 4rem;
-            flex: 1;
-            margin-bottom: 1rem;
+        .dt-i {
+            font-size: 3rem;
         }
+
 
         @media screen and (min-width: 380px) {
-            .data {
+            .d {
                 flex-direction: row
             }
 
-            .data--icon {
-                margin-bottom: 0rem;
+            .dt-i {
+                font-size: 4rem;
             }
         }
 
-
-        .data--text {
+        .dt-t {
             flex: 2;
             font-size: 1.5rem;
-            margin-left: 0.5rem;
-            text-align: center
+            margin: 0 1rem;
+            text-align: center;
+            display: none;
         }
 
-        @media screen and (max-width: 600px) {
-            .data--text {
-                display: none
+        @media screen and (min-width: 600px) {
+            .dt-t {
+                display: block
+            }
+
+            .dt-i {
+                font-size: 5rem;
             }
         }
 
-        .data--value {
-            text-align: right;
+        .dt-v {
             font-weight: 900;
-            display: flex
         }
 
-        .data--tag {
+        .dt-tg {
             width: 2rem;
-            flex: 1;
             display: inline-flex;
             justify-content: end
         }
@@ -147,18 +136,40 @@
             color: #2979ff
         }
 
-        footer {
-            margin-top: auto;
-            font-size: .8rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #363636;
-            width: 100%;
-            padding: .5rem;
-            box-shadow: 0 4px 9px 4px #000000;
-
+        .pres {
+            color: #00b0ff
         }
+
+        header,
+        footer {
+            background: #444;
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            padding: .5rem;
+            align-items: center;
+            z-index: 1;
+        }
+
+        header span,
+        main,
+        .dt-i {
+            flex: 1
+        }
+
+        header {
+            font-weight: 900;
+            padding: 1rem;
+            color: #B2FF59;
+            box-shadow: 0 -4px 9px 4px #000;
+        }
+
+        footer {
+            font-size: .75rem;
+            margin-top: auto;
+            box-shadow: 0 4px 9px 4px #000;
+        }
+
 
         footer div {
             margin-bottom: .25rem;
@@ -171,65 +182,78 @@
 </head>
 
 <body>
-    <header class='webpage--title'>
+    <header>
         <span class='u'>UNIVERSIDAD</span>
         <span class='d'>DISTRITAL</span>
         <span class='em'>Estación</span>
         <span class='em'>Meteorológica</span>
     </header>
     <main>
-        <div class='data'>
-            <div class='data--icon fa-2x fad fa-temperature-sun temp'></div>
-            <div class='data--text'>Temperature</div>
-            <div class='data--value temp'>
-                <span id='temp'>
-                    LOADING
-                </span>
-                <span class='data--tag'>°C</span>
+        <div class='dt'>
+            <div class='dt-i fad fa-temperature-sun temp'></div>
+            <div class='dt-t'>Temperature</div>
+            <div class='dt-v temp'>
+                <span id='temp'>LOAD</span>
+                <span class='dt-tg'>°C</span>
             </div>
         </div>
-        <div class='data'>
-            <div class='data--icon fa-2x fad fa-hand-holding-water humi'></div>
-            <div class='data--text'>Humidity</div>
-            <div class='data--value humi'>
-                <span id='humi'>
-                    LOADING
-                </span>
-                <span class='data--tag'>%</span>
+        <div class='dt'>
+            <div class='dt-i fad fa-hand-holding-water humi'></div>
+            <div class='dt-t'>Humidity</div>
+            <div class='dt-v humi'>
+                <span id='humi'>LOAD</span>
+                <span class='dt-tg'>%</span>
+            </div>
+        </div>
+        <div class='dt'>
+            <div class='dt-i fad fa-gauge-max pres'></div>
+            <div class='dt-t'>Pressuse</div>
+            <div class='dt-v pres'>
+                <span id='pres'>LOAD</span>
+                <span class='dt-tg'>%</span>
+            </div>
+        </div>
+        <div class='dt'>
+            <div class='dt-i fad fa-wind wind'></div>
+            <div class='dt-t'>Wind</div>
+            <div class='dt-v wind'>
+                <span id='wind'>LOAD</span>
+                <span class='dt-tg'>%</span>
             </div>
         </div>
     </main>
 
     <footer>
         <div>
-            Created by Edwin Marroquín with much <i class='fa-lg fad fa-coffee-pot'
+            Created by Edwin Marroquín with much <i
+                class='fa-lg fad fa-coffee-pot'
                 style='color: #FF6E40;margin-left: 0.5rem;'></i>
         </div>
         <div>
-            For more information go to repository project <a href="" class="href">here</a>
+            For more information go to repository project <a href=""
+                class="href">here</a>
         </div>
         <div>
-            or email me to <a href='mailto:devem.software@gmail.com'>devem.sofware@gmail.com</a>
+            or email me to <a
+                href='mailto:devem.software@gmail.com'>devem.sofware@gmail.com</a>
         </div>
     </footer>
 </body>
 <script>
     (function () {
-        setInterval(UpdateDoc, 10000)
-    })()
+        setInterval(UpdateDoc, 100)
+    })();
 
     async function UpdateDoc() {
 
         await fetch('/data', {
                 method: 'GET'
             }, 60000)
-            .then(async res => await res.json())
-            .then(async data => {
-                const d = data
-                document.getElementById('temp').innerHTML = ((data.t) != undefined ? await parseFloat(data
-                    .t).toFixed(2) : '...')
-                document.getElementById('humi').innerHTML = ((data.h) != undefined ? await parseFloat(data
-                    .h).toFixed(2) : '...')
+            .then(async r => await r.json())
+            .then(async d => {
+                const dt = d;
+                document.getElementById('temp').innerHTML = ((dt.t) != undefined ? await parseFloat(dt.t).toFixed(2) : '...');
+                document.getElementById('humi').innerHTML = ((dt.h) != undefined ? await parseFloat(dt.h).toFixed(2) : '...');
             })
     }
 </script>

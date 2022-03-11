@@ -2,6 +2,10 @@
 #include <DHT.h>         // Libreria DHT
 #include <ESP8266WiFi.h> // Libreria ESP8266
 
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
+
 // ==================== Librerias para el manejo de fechas
 #include <NTPClient.h>
 #include <WiFiUdp.h>
@@ -84,7 +88,15 @@ void setup()
   Serial.setDebugOutput(true);
 
   WiFiManager wm;
-  wm.autoConnect("MeteoLab"); // Red WiFi creada por la placa ESP8266
+
+  if (!wm.autoConnect("MeteoLab", "hidro2021"))
+  {
+    Serial.println("failed to connect, we should reset as see if it connects");
+    delay(3000);
+    ESP.reset();
+  }
+
+  // wm.autoConnect("MeteoLab"); // Red WiFi creada por la placa ESP8266
   // Punto en donde se tiene que buscar el acceso
   // para que la lectura inicie
 
@@ -118,6 +130,11 @@ void setup()
 
   // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
+
+  lcd.init(); // initialize the lcd
+  // Print a message to the LCD.
+  lcd.backlight();
+
 }
 
 void loop()
@@ -129,6 +146,12 @@ void loop()
   h = dht.readHumidity();
   t = dht.readTemperature();
 
+  lcd.clear();
+  lcd.setCursor(2, 0);
+  lcd.print(WiFi.localIP());
+  lcd.setCursor(0, 1);
+  lcd.print("T " + String(t) + "  H " + String(h) );
+ 
   if (isnan(h) || isnan(t))
   {
     Serial.println("// ============= Failed to read from DHT sensor!");

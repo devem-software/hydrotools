@@ -61,15 +61,29 @@ FirebaseConfig config;
 unsigned long sendDataPrevMillis = 0;
 
 // ==================== Inicializacion de variables
+long dataTime = 0;
 float t = 0.0;
 float h = 0.0;
 int d = 10000;
+
+// ==================== Carga de plantilla HTML
 #include "index.h"
 
 void setup()
 {
 
   pinMode(ESP8266_LED, OUTPUT); // Configuracion led de la placa ESP8266
+
+  lcd.init(); // initialize the lcd
+  lcd.backlight();
+
+  lcd.home();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("User:  MeteoLoab");
+  lcd.setCursor(0, 1);
+  lcd.print("Pass:  hidro2021");
+  delay(3000);
 
   timeClient.begin();
   timeClient.setTimeOffset(-3600 * 5); // Define fecha y hora segun uso horario
@@ -82,26 +96,41 @@ void setup()
   WiFi.mode(WIFI_STA); // Inicia la placa ESP8266 en modo
   // STATION       = WIFI_STA
   // ACCESS POINT  = WIFI_AP
-  // WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   Serial.begin(115200);
   Serial.setDebugOutput(true);
 
   WiFiManager wm;
 
+  wm.setSTAStaticIPConfig(
+    
+    
+  );
+
+
   if (!wm.autoConnect("MeteoLab", "hidro2021"))
+  // ============ Se crea una red wifi provisional
+  // ============ con el nombre de la red y la contraseña
   {
-    Serial.println("failed to connect, we should reset as see if it connects");
-    delay(3000);
+    lcd.home();
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Error en la conexion");
+    lcd.setCursor(0, 1);
+    lcd.print("Intente de nuevo");
+    delay(2000);
     ESP.reset();
   }
 
-  // wm.autoConnect("MeteoLab"); // Red WiFi creada por la placa ESP8266
-  // Punto en donde se tiene que buscar el acceso
-  // para que la lectura inicie
+  lcd.home();
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Conectado ...");
+  lcd.setCursor(2, 1);
+  lcd.print(WiFi.localIP());
+  delay(1000);
 
-  Serial.println("// ============= WiFi connected\n");
-  Serial.print("IP address: ");
+  Serial.println("IP: ");
   Serial.println(WiFi.localIP());
 
   if (MDNS.begin("esp8266"))
@@ -111,7 +140,8 @@ void setup()
 
   // ============= Inicializacion del servidor local
   server.on("/data", []()
-    { server.send(200, "application/json", dataJson(t, h)); });
+            {
+    server.send(200, "application/json", dataJson(dataTime, t, h)); });
   server.on("/", handle_OnConnect);
   server.onNotFound(handle_NotFound);
   server.begin();
@@ -130,11 +160,6 @@ void setup()
 
   // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
-
-  lcd.init(); // initialize the lcd
-  // Print a message to the LCD.
-  lcd.backlight();
-
 }
 
 void loop()
@@ -146,15 +171,21 @@ void loop()
   h = dht.readHumidity();
   t = dht.readTemperature();
 
+  lcd.home();
   lcd.clear();
   lcd.setCursor(2, 0);
   lcd.print(WiFi.localIP());
   lcd.setCursor(0, 1);
-  lcd.print("T " + String(t) + "  H " + String(h) );
- 
+  lcd.print("T " + String(t) + "  H " + String(h));
+
   if (isnan(h) || isnan(t))
   {
-    Serial.println("// ============= Failed to read from DHT sensor!");
+    lcd.home();
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Error de lectura");
+    lcd.setCursor(0, 1);
+    lcd.print("Revise el sistema");
     return;
   }
   if (client.connect(THINK_SERVER, 80))
@@ -164,8 +195,8 @@ void loop()
     // ============= Creacion del nodo con una marca de tiempo para almacenar
     // ============= la nformacion en la base de datos de FireBase
     timeClient.update();
-    unsigned long epochTime = timeClient.getEpochTime();
-    String nodePath = (String)DB_NODE + "/" + String(epochTime);
+    dataTime = timeClient.getEpochTime();
+    String nodePath = (String)DB_NODE + "/" + String(dataTime);
 
     Serial.println("\n// ===========================================");
     Serial.println((String) "Sending temperature (°C): " + String(t));
@@ -202,13 +233,15 @@ void loop()
   digitalWrite(ESP8266_LED, HIGH); // Apaga el led de la placa ESP8266
 
   server.handleClient();
-  
+
   MDNS.update();
 
   delay(d); // Tiempo de retraso entre las lecturas
   // Se recomiendan minimo 10000 milisegundos entre lecturas
   // pero para no saturar la base de datos se recomiendan
   // lecturas entre 30000 milisegundos y 120000 milisegundos
+
+  lcd.clear();
 }
 
 void handle_OnConnect()
@@ -222,12 +255,14 @@ void handle_NotFound()
   server.send(404, "text/plain", "Opps! regrese a la pagina anterior");
 }
 
-String dataJson(float temp, float humi)
+String dataJson(int d, float t, float h)
 {
-  String dataJ = "{ \"t\": ";
-  dataJ += String(temp);
+  String dataJ = "{ \"d\": ";
+  dataJ += String(d);
+  dataJ += " , \"t\" : ";
+  dataJ += String(t);
   dataJ += " , \"h\" : ";
-  dataJ += String(humi);
+  dataJ += String(h);
   dataJ += "}";
 
   return dataJ;

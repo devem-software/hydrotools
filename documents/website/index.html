@@ -140,6 +140,11 @@
             color: #00b0ff
         }
 
+        .coffee {
+            color: #FF6E40;
+            margin-left: 0.5rem;
+        }
+
         header,
         footer {
             background: #444;
@@ -226,15 +231,14 @@
     <footer>
         <div>
             Created by Edwin Marroquín with much <i
-                class='fa-lg fad fa-coffee-pot'
-                style='color: #FF6E40;margin-left: 0.5rem;'></i>
+                class='fa-lg fad fa-coffee-pot coffee'></i>
         </div>
         <div>
-            For more information go to repository project <a href=""
-                class="href">here</a>
+            For more information go to repository project <a target="_new"
+                href="" class="href">here</a>
         </div>
         <div>
-            or email me to <a
+            or email me to <a target="_new"
                 href='mailto:devem.software@gmail.com'>devem.sofware@gmail.com</a>
         </div>
     </footer>
@@ -252,8 +256,14 @@
             .then(async r => await r.json())
             .then(async d => {
                 const dt = d;
-                document.getElementById('temp').innerHTML = ((dt.t) != undefined ? await parseFloat(dt.t).toFixed(2) : '...');
-                document.getElementById('humi').innerHTML = ((dt.h) != undefined ? await parseFloat(dt.h).toFixed(2) : '...');
+                document.getElementById('temp').innerHTML = ((dt
+                        .t) != undefined ? await parseFloat(dt
+                        .t)
+                    .toFixed(2) : '...');
+                document.getElementById('humi').innerHTML = ((dt
+                        .h) != undefined ? await parseFloat(dt
+                        .h)
+                    .toFixed(2) : '...');
             })
     }
 </script>

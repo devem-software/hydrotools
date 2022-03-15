@@ -1,5 +1,6 @@
-const char* hostname = "METEOROLOGIA";
+#define hostname = "ESTACION METEOROLOGICA";
+#define password = "udlab2021";
 
-IPAddress _ip(192, 168, 1, 200);
-IPAddress _gw(192, 168, 1, 1);
+IPAddress _ip(0, 0, 0, 0);
+IPAddress _gw(0, 0, 0, 0);
 IPAddress _sn(255, 255, 255, 0);

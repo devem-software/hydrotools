@@ -1,14 +1,14 @@
 #include "config/wifi.h"
 
 void ConnectWiFi() {
-  Serial.print("");
+
   WiFi.mode(WIFI_STA);
 
   DNSServer dns;
 
-  AsyncWiFiManager wifiManager(&server, &dns);
-  wifiManager.setSTAStaticIPConfig(_ip, _gw, _sn);
-  wifiManager.autoConnect(hostname);
+  AsyncWiFiManager wm(&server, &dns);
+  wm.setSTAStaticIPConfig(_ip, _gw, _sn);
+  wm.autoConnect(hostname, password);
 
 
   while (WiFi.status() != WL_CONNECTED) {

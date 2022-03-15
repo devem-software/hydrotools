@@ -52,7 +52,6 @@ ESP8266WebServer server(80);
 // ==================== Conexión Wifi-Servidor
 WiFiClient client;
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org");
 
 // ==================== Configuracion Firebase
 FirebaseData fbdo;
@@ -65,33 +64,32 @@ long dataTime = 0;
 float t = 0.0;
 float h = 0.0;
 int d = 10000;
+long dt = 0;
+int utcOffset = 0;
+// Define fecha y hora segun uso horario
+// Ajustado en segundos * El uso horario
+// GMT+5 =  5
+// GMT-5 =  5
+// GMT-1 = -1
+// GMT   =  0
 
-// ==================== Carga de plantilla HTML
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffset * 3600);
+
 #include "index.h"
 
 void setup()
 {
-
-  pinMode(ESP8266_LED, OUTPUT); // Configuracion led de la placa ESP8266
-
   lcd.init(); // initialize the lcd
+  // Print a message to the LCD.
   lcd.backlight();
-
-  lcd.home();
+  delay(1000);
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("User:  MeteoLoab");
+  lcd.print("Select MeteoLab");
   lcd.setCursor(0, 1);
-  lcd.print("Pass:  hidro2021");
-  delay(3000);
+  lcd.print("open 192.168.4.1");
 
-  timeClient.begin();
-  timeClient.setTimeOffset(-3600 * 5); // Define fecha y hora segun uso horario
-  // Ajustado en segundos * El uso horario
-  // GMT+1 = 3600*1
-  // GMT+8 = 3600*8
-  // GMT-1 = 3600*(-1)
-  // GMT   = 3600*0
+  pinMode(ESP8266_LED, OUTPUT); // Configuracion led de la placa ESP8266
 
   WiFi.mode(WIFI_STA); // Inicia la placa ESP8266 en modo
   // STATION       = WIFI_STA
@@ -101,12 +99,6 @@ void setup()
   Serial.setDebugOutput(true);
 
   WiFiManager wm;
-
-  wm.setSTAStaticIPConfig(
-    
-    
-  );
-
 
   if (!wm.autoConnect("MeteoLab", "hidro2021"))
   // ============ Se crea una red wifi provisional
@@ -122,13 +114,11 @@ void setup()
     ESP.reset();
   }
 
-  lcd.home();
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Conectado ...");
-  lcd.setCursor(2, 1);
-  lcd.print(WiFi.localIP());
-  delay(1000);
+  timeClient.begin();
+
+  // wm.autoConnect("MeteoLab"); // Red WiFi creada por la placa ESP8266
+  // Punto en donde se tiene que buscar el acceso
+  // para que la lectura inicie
 
   Serial.println("IP: ");
   Serial.println(WiFi.localIP());
@@ -140,8 +130,7 @@ void setup()
 
   // ============= Inicializacion del servidor local
   server.on("/data", []()
-            {
-    server.send(200, "application/json", dataJson(dataTime, t, h)); });
+    { server.send(200, "application/json", dataJson(dt, t, h)); });
   server.on("/", handle_OnConnect);
   server.onNotFound(handle_NotFound);
   server.begin();
@@ -160,6 +149,12 @@ void setup()
 
   // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
+
+
+  // ============= Inicio de configuracion para la geolocalizacion
+  String js = client.print("GET https://api.freegeoip.app/json/?apikey=591169c0-a414-11ec-9015-b52262ff86f2");
+  Serial.println(js);
+  
 }
 
 void loop()
@@ -195,8 +190,8 @@ void loop()
     // ============= Creacion del nodo con una marca de tiempo para almacenar
     // ============= la nformacion en la base de datos de FireBase
     timeClient.update();
-    dataTime = timeClient.getEpochTime();
-    String nodePath = (String)DB_NODE + "/" + String(dataTime);
+    dt = timeClient.getEpochTime();
+    String nodePath = (String)DB_NODE + "/" + String(dt);
 
     Serial.println("\n// ===========================================");
     Serial.println((String) "Sending temperature (°C): " + String(t));
@@ -271,4 +266,3 @@ String dataJson(int d, float t, float h)
 // TODO:
 //          1. Configuracion de la base de datos desde el dispositivo movil
 //          2. Almacenamiento en Firebase de los datos en formato Json
-//          3. Control de placa y sensores mediante plataforma web

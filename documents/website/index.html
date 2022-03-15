@@ -11,53 +11,86 @@
     <link rel='stylesheet'
         href='https://site-assets.fontawesome.com/releases/v6.0.0/css/all.css'>
     <style>
+        :root {
+            --bg: #FAFAFA;
+            --cv: #F5F5F5;
+            --clr: #616161;
+            --ttl: #689F38;
+            --bdr: #CFD8DC;
+            /*400*/
+            --te: #FFCA28;
+            --hu: #29B6F6;
+            --wn: #7E57C2;
+            --pre: #EC407A
+        }
+
+        .td {
+            --bg: #212121;
+            --cv: #424242;
+            --clr: #F5F5F5;
+            --ttl: #AED581;
+            --bdr: #212121;
+            /*100*/
+            --te: #FFE082;
+            /*AMBER*/
+            --hu: #81D4FA;
+            /*tl BLUE*/
+            --wn: #B39DDB;
+            /*DEEP PUERPLE*/
+            --pre: #F48FB1
+                /*PINK*/
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: all 0.1s ease-in-out
         }
 
         a {
             text-decoration: none;
-            color: #B2FF59;
+            color: var(--ttl)
         }
 
         html,
         body {
             max-height: 100vh;
-            height: 100%;
+            height: 100%
         }
 
         html {
             font-family: 'Outfit', sans-serif, verdana;
-            font-size: 16px;
-            background: #333
+            font-size: 16px
         }
 
         body {
             display: flex;
-            color: #eee;
+            color: var(--clr);
             flex-direction: column;
+            background: var(--bg)
         }
-
 
         header span {
-            margin: 0;
-            padding: 0;
-            line-height: 1;
-            text-align: center;
+            line-height: 90%;
+            text-align: center
         }
 
-        header span:nth-child(2) {
-            margin-bottom: 1rem;
+        header span:nth-child(3) {
+            margin-top: 1rem
+        }
+
+        header span.u,
+        header span.d {
+            font-size: 1.5rem
         }
 
         header span.u {
-            color: #eb0b00;
+            color: #eb0b00
         }
 
         header span.d {
-            color: #f9dc25;
+            color: #f9dc25
         }
 
         main {
@@ -67,7 +100,7 @@
             width: 100%;
             padding: 1rem;
             overflow: hidden;
-            overflow-y: scroll;
+            overflow-y: scroll
         }
 
 
@@ -81,12 +114,13 @@
             margin: 1rem 0;
             padding: 1.5rem;
             border-radius: .2rem;
-            box-shadow: 0 5px 9px -4px #000;
-            background: #444;
+            box-shadow: 0 5px 9px -4px rgba(0, 0, 0, .5);
+            background: var(--cv);
+            border: 1px solid var(--bdr)
         }
 
         .dt-i {
-            font-size: 3rem;
+            font-size: 3rem
         }
 
 
@@ -96,7 +130,7 @@
             }
 
             .dt-i {
-                font-size: 4rem;
+                font-size: 4rem
             }
         }
 
@@ -105,7 +139,7 @@
             font-size: 1.5rem;
             margin: 0 1rem;
             text-align: center;
-            display: none;
+            display: none
         }
 
         @media screen and (min-width: 600px) {
@@ -114,12 +148,18 @@
             }
 
             .dt-i {
-                font-size: 5rem;
+                font-size: 5rem
             }
         }
 
         .dt-v {
-            font-weight: 900;
+            font-weight: 900
+        }
+
+        .dt-v.v {
+            display: flex;
+            align-items: center;
+            flex-direction: column
         }
 
         .dt-tg {
@@ -128,27 +168,31 @@
             justify-content: end
         }
 
-        .temp {
-            color: #FFD740
+        .te {
+            color: var(--te)
         }
 
-        .humi {
-            color: #2979ff
+        .hu {
+            color: var(--hu)
         }
 
-        .pres {
-            color: #00b0ff
+        .pr {
+            color: var(--pre)
+        }
+
+        .wn {
+            color: var(--wn)
         }
 
         header,
         footer {
-            background: #444;
+            background: var(--cv);
             display: flex;
             width: 100%;
             flex-direction: column;
             padding: .5rem;
             align-items: center;
-            z-index: 1;
+            z-index: 1
         }
 
         header span,
@@ -158,67 +202,131 @@
         }
 
         header {
+            height: 7rem;
             font-weight: 900;
             padding: 1rem;
-            color: #B2FF59;
-            box-shadow: 0 -4px 9px 4px #000;
+            color: var(--ttl);
+            box-shadow: 0 -4px 9px 4px rgba(0, 0, 0, .7)
         }
 
         footer {
+            height: 5rem;
             font-size: .75rem;
             margin-top: auto;
-            box-shadow: 0 4px 9px 4px #000;
+            box-shadow: 0 4px 9px 4px rgba(0, 0, 0, .7);
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center
         }
 
-
-        footer div {
-            margin-bottom: .25rem;
+        .mo {
+            position: absolute;
+            z-index: 2;
+            top: 2.5rem;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            overflow: hidden;
+            box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, .5);
+            border-radius: 100rem
         }
 
-        footer div:last-child {
-            margin-bottom: 0;
+        .mo .btn,
+        .mo .f {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center
+        }
+
+        .mo .icn {
+            width: 4rem;
+            height: 2rem;
+            display: flex;
+            position: absolute;
+            left: 0;
+            right: 2rem;
+        }
+
+        .mo .btn {
+            border-radius: 100rem;
+            width: 2rem;
+            height: 2rem;
+            background: var(--cv);
+            box-shadow: inset 0 0 0 1px var(--clr);
+            position: absolute;
+            left: 0;
+            right: 2rem
+        }
+
+        .icn.act {
+            left: -2rem
+        }
+
+        .sun {
+            color: #FFAB00
+        }
+
+        .moon {
+            color: #2962FF
         }
     </style>
 </head>
 
-<body>
+<body class='tl'>
+    <div class='mo sun' id='mo'>
+        <div class='icn' id='icn'>
+            <div class='f fas fa-lg fa-sun'></div>
+            <div class='f fas fa-lg fa-moon'></div>
+        </div>
+    </div>
     <header>
         <span class='u'>UNIVERSIDAD</span>
         <span class='d'>DISTRITAL</span>
-        <span class='em'>Estación</span>
-        <span class='em'>Meteorológica</span>
+        <span class='em'>Estación Meteorológica</span>
     </header>
     <main>
         <div class='dt'>
-            <div class='dt-i fad fa-temperature-sun temp'></div>
+            <div class='dt-i fad fa-calendar-clock'></div>
+            <div class='dt-v v'>
+                <span id='fd'>GET</span>
+                <span id='ft'>TIME</span>
+            </div>
+        </div>
+        <div class='dt'>
+            <div class='dt-i fad fa-temperature-sun te'></div>
             <div class='dt-t'>Temperature</div>
-            <div class='dt-v temp'>
-                <span id='temp'>LOAD</span>
+            <div class='dt-v te'>
+                <span id='te'>LOAD</span>
                 <span class='dt-tg'>°C</span>
             </div>
         </div>
         <div class='dt'>
-            <div class='dt-i fad fa-hand-holding-water humi'></div>
+            <div class='dt-i fad fa-hand-holding-water hu'></div>
             <div class='dt-t'>Humidity</div>
-            <div class='dt-v humi'>
-                <span id='humi'>LOAD</span>
+            <div class='dt-v hu'>
+                <span id='hu'>LOAD</span>
                 <span class='dt-tg'>%</span>
             </div>
         </div>
         <div class='dt'>
-            <div class='dt-i fad fa-gauge-max pres'></div>
-            <div class='dt-t'>Pressuse</div>
-            <div class='dt-v pres'>
-                <span id='pres'>LOAD</span>
-                <span class='dt-tg'>%</span>
+            <div class='dt-i fad fa-gauge-max pr'></div>
+            <div class='dt-t'>COMMING</div>
+            <div class='dt-v pr'>
+                <span id='pr'></span>
+                <span class='dt-tg'></span>
             </div>
         </div>
         <div class='dt'>
-            <div class='dt-i fad fa-wind wind'></div>
-            <div class='dt-t'>Wind</div>
-            <div class='dt-v wind'>
-                <span id='wind'>LOAD</span>
-                <span class='dt-tg'>%</span>
+            <div class='dt-i fad fa-wind wn'></div>
+            <div class='dt-t'>COMMING</div>
+            <div class='dt-v wn'>
+                <span id='wn'></span>
+                <span class='dt-tg'></span>
             </div>
         </div>
     </main>
@@ -230,8 +338,7 @@
                 style='color: #FF6E40;margin-left: 0.5rem;'></i>
         </div>
         <div>
-            For more information go to repository project <a href=""
-                class="href">here</a>
+            For more information go to repository project <a href="">here</a>
         </div>
         <div>
             or email me to <a
@@ -241,21 +348,36 @@
 </body>
 <script>
     (function () {
-        setInterval(UpdateDoc, 100)
+        setInterval(UpdateDoc, 10000)
     })();
 
+    function $(id) {
+        return document.getElementById(id)
+    }
     async function UpdateDoc() {
 
-        await fetch('/data', {
-                method: 'GET'
+        await fetch('http://192.168.88.6/data', {
+                method: 'GET',
             }, 60000)
             .then(async r => await r.json())
             .then(async d => {
                 const dt = d;
-                document.getElementById('temp').innerHTML = ((dt.t) != undefined ? await parseFloat(dt.t).toFixed(2) : '...');
-                document.getElementById('humi').innerHTML = ((dt.h) != undefined ? await parseFloat(dt.h).toFixed(2) : '...');
+                $('te').innerHTML = ((dt.t) != undefined ? await parseFloat(dt.t).toFixed(2) : '...');
+                $('hu').innerHTML = ((dt.h) != undefined ? await parseFloat(dt.h).toFixed(2) : '...');
+
+                f = new Date(dt.d);
+                f.setUTCSeconds(dt.d);
+                $('fd').innerHTML = ((dt.h) != undefined ? await f.toLocaleDateString() : '...');
+                $('ft').innerHTML = ((dt.h) != undefined ? await f.toLocaleTimeString() : '...');
             })
     }
+
+    $('mo').addEventListener('click', () => {
+        document.body.classList.toggle('td');
+        document.body.classList.toggle('tl');
+        $('icn').classList.toggle('act');
+        $('icn').classList.toggle('moon');
+    })
 </script>
 
 </html>

@@ -20,6 +20,27 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+nav {
+  ul {
+    height: 2rem;
+    display: flex;
+    sjustify-content: center;
+    align-items: center;
+    list-style: none;
+    li {
+      flex: 1;
+      a {
+        height: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: var(--ttl);
+        color: var(--bg);
+        font-size: 1rem;
+        font-weight: 900;
+      }
+    }
+  }
+}
 </style>

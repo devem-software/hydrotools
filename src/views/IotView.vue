@@ -5,7 +5,7 @@
     <option v-for="(i, k) in state.channels" :key="k" :value="k">{{ i }}</option>
   </select>
   <div class="map">
-    <iframe id="map" v-bind:src="geoLoc" frameborder="0" style="width: 100%; height: auto"></iframe>
+    <iframe id="map" :src="state.geoLoc" frameborder="0" style="width: 100%; height: auto"></iframe>
   </div>
   <div class="data">
     <div class="dt">
@@ -45,6 +45,7 @@ export default {
       data: [],
       info: [],
       lastData: [],
+      geoLoc: "",
       loading: true,
     });
 

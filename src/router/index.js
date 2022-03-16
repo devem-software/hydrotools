@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+const basePath = document.getElementsByTagName("base")[0].href;
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  base: "https://devem-software.github.io/hydrotools/",
+  base: basePath,
   routes: [
     {
       path: "/",
@@ -20,6 +22,6 @@ const router = createRouter({
       component: () => import("../views/StatictisView.vue"),
     },
   ],
-});
+})
 
 export default router;

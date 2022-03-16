@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-const basePath = document.getElementsByTagName("base")[0].href;
+// const basePath = document.getElementsByTagName("base")[0].href;
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  base: basePath,
+  // base: basePath,
   routes: [
     {
       path: "/",

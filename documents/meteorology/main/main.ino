@@ -149,12 +149,7 @@ void setup()
 
   // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
-
-
-  // ============= Inicio de configuracion para la geolocalizacion
-  String js = client.print("GET https://api.freegeoip.app/json/?apikey=591169c0-a414-11ec-9015-b52262ff86f2");
-  Serial.println(js);
-  
+ 
 }
 
 void loop()

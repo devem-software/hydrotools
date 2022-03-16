@@ -25,7 +25,7 @@ nav {
   ul {
     height: 2rem;
     display: flex;
-    sjustify-content: center;
+    justify-content: center;
     align-items: center;
     list-style: none;
     li {

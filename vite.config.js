@@ -5,6 +5,7 @@ import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: 'https://devem-software.github.io/hydrotools/',
   plugins: [vue()],
   resolve: {
     alias: {

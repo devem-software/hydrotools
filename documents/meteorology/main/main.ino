@@ -12,9 +12,10 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 
 // ==================== Librerias para la creacion de un servidor web
 #include <DNSServer.h>
-#include <ESP8266WebServer.h >
 #include <ESP8266mDNS.h>
 #include <WiFiManager.h>
+#include <ESP8266WebServer.h>
+// #include <ESP8266WebServerSecure.h>
 
 // ==================== Librerias para coneccion a base datos de google
 #include <FirebaseESP8266.h>    // Firebase para ESP8266
@@ -47,6 +48,8 @@ DHT dht(DHTPIN, DHTTYPE); // Instaciacion de la clase para el Sensor DHT
 
 // ==================== Configuracion placa ESP8266
 #define ESP8266_LED 16 // Define el led a manupilar en la placa ESP8266
+// BearSSL::ESP8266WebServerSecure provisioningServer(443);
+// BearSSL::ESP8266WebServerSecure serverS(443);
 ESP8266WebServer server(80);
 
 // ==================== Conexión Wifi-Servidor
@@ -76,9 +79,11 @@ int utcOffset = 0;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffset * 3600);
 
 #include "index.h"
+// #include "secure.h"
 
 void setup()
 {
+
   lcd.init(); // initialize the lcd
   // Print a message to the LCD.
   lcd.backlight();
@@ -129,10 +134,19 @@ void setup()
   }
 
   // ============= Inicializacion del servidor local
+  // server.on("/", secureRedirect);
+  server.onNotFound(handle_NotFound);
+  server.begin();
+
+  // serverS.getServer().setRSACert(new BearSSL::X509List(serverCert), new BearSSL::PrivateKey(serverKey));
+  // serverS.on("/", handle_OnConnect);
+  // serverS.on("/data", []()
+  //   { serverS.send(200, "application/json", dataJson(dt, t, h)); });
+  // serverS.begin();
+ 
+  server.on("/", handle_OnConnect);
   server.on("/data", []()
     { server.send(200, "application/json", dataJson(dt, t, h)); });
-  server.on("/", handle_OnConnect);
-  server.onNotFound(handle_NotFound);
   server.begin();
 
   // ============= Coneccion a FireBase
@@ -149,12 +163,7 @@ void setup()
 
   // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
-
-
-  // ============= Inicio de configuracion para la geolocalizacion
-  String js = client.print("GET https://api.freegeoip.app/json/?apikey=591169c0-a414-11ec-9015-b52262ff86f2");
-  Serial.println(js);
-  
+ 
 }
 
 void loop()
@@ -228,6 +237,7 @@ void loop()
   digitalWrite(ESP8266_LED, HIGH); // Apaga el led de la placa ESP8266
 
   server.handleClient();
+  // serverS.handleClient();
 
   MDNS.update();
 
@@ -261,6 +271,12 @@ String dataJson(int d, float t, float h)
   dataJ += "}";
 
   return dataJ;
+}
+
+void secureRedirect()
+{
+  // server.sendHeader("Location", String("https://esp8266.local"), true);
+  // server.send(301, "text/plain", "");
 }
 
 // TODO:

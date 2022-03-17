@@ -95,36 +95,52 @@
 
         main {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            padding: 1rem;
-            overflow: hidden;
-            overflow-y: scroll
+            flex-flow: column;
+            height: 100%;
+            overflow-y: auto
         }
 
+        .map {
+            width: auto;
+            min-height: 19rem;
+            display: flex;
+            flex: 1;
+            margin: 1rem
+        }
+
+        .data {
+            flex: 1;
+            display: flex;
+            flex-flow: row wrap;
+            margin: 0 1rem 1rem 1rem
+        }
 
         .dt {
             display: flex;
-            align-items: center;
-            width: 80%;
-            max-width: 32rem;
-            min-width: 15rem;
-            font-size: 1.5rem;
-            margin: 1rem 0;
+            width: calc(100% / 3);
+            font-size: 1rem;
             padding: 1.5rem;
-            border-radius: .2rem;
-            box-shadow: 0 5px 9px -4px rgba(0, 0, 0, .5);
             background: var(--cv);
-            border: 1px solid var(--bdr)
+            flex-direction: column;
+            align-items: center;
+            justify-content: center
         }
 
         .dt-i {
-            font-size: 3rem
+            font-size: 3rem;
+            width: 5rem;
+            height: 5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
 
         @media screen and (min-width: 380px) {
+            .dt {
+                font-size: 1.5rem;
+            }
+
             .d {
                 flex-direction: row
             }
@@ -153,12 +169,14 @@
         }
 
         .dt-v {
-            font-weight: 900
+            font-weight: 900;
+            height: 6rem;
+            justify-content: center;
+            display: flex;
+            align-items: center;
         }
 
         .dt-v.v {
-            display: flex;
-            align-items: center;
             flex-direction: column
         }
 
@@ -201,8 +219,7 @@
         }
 
         header span,
-        main,
-        .dt-i {
+        main {
             flex: 1
         }
 
@@ -282,7 +299,7 @@
     </style>
 </head>
 
-<body class='tl'>
+<body class='td'>
     <div class='mo sun' id='mo'>
         <div class='icn' id='icn'>
             <div class='f fas fa-lg fa-sun'></div>
@@ -295,44 +312,46 @@
         <span class='em'>Estación Meteorológica</span>
     </header>
     <main>
-        <div class='dt'>
-            <div class='dt-i fad fa-calendar-clock'></div>
-            <div class='dt-v v'>
-                <span id='fd'>GET</span>
-                <span id='ft'>TIME</span>
-            </div>
+        <div class='map'>
+            <iframe id='map' src='' frameborder='0'
+                style='width: 100%;height: auto;'></iframe>
         </div>
-        <div class='dt'>
-            <div class='dt-i fad fa-temperature-sun te'></div>
-            <div class='dt-t'>Temperature</div>
-            <div class='dt-v te'>
-                <span id='te'>LOAD</span>
-                <span class='dt-tg'>°C</span>
+        <div class='data'>
+            <div class='dt'>
+                <div class='dt-i fad fa-calendar-clock'></div>
+                <div class='dt-v v'>
+                    <span id='fd'>GET</span>
+                    <span id='ft'>TIME</span>
+                </div>
             </div>
-        </div>
-        <div class='dt'>
-            <div class='dt-i fad fa-hand-holding-water hu'></div>
-            <div class='dt-t'>Humidity</div>
-            <div class='dt-v hu'>
-                <span id='hu'>LOAD</span>
-                <span class='dt-tg'>%</span>
+            <div class='dt'>
+                <div class='dt-i fad fa-temperature-sun te'></div>
+                <div class='dt-v te'>
+                    <span id='te'>LOAD</span>
+                    <span class='dt-tg'>°C</span>
+                </div>
             </div>
-        </div>
-        <div class='dt'>
-            <div class='dt-i fad fa-gauge-max pr'></div>
-            <div class='dt-t'>COMMING</div>
-            <div class='dt-v pr'>
-                <span id='pr'></span>
-                <span class='dt-tg'></span>
+            <div class='dt'>
+                <div class='dt-i fad fa-hand-holding-water hu'></div>
+                <div class='dt-v hu'>
+                    <span id='hu'>LOAD</span>
+                    <span class='dt-tg'>%</span>
+                </div>
             </div>
-        </div>
-        <div class='dt'>
-            <div class='dt-i fad fa-wind wn'></div>
-            <div class='dt-t'>COMMING</div>
-            <div class='dt-v wn'>
-                <span id='wn'></span>
-                <span class='dt-tg'></span>
+            <!-- <div class='dt'>
+                <div class='dt-i fad fa-gauge-max pr'></div>
+                <div class='dt-v pr'>
+                    <span id='pr'></span>
+                    <span class='dt-tg'></span>
+                </div>
             </div>
+            <div class='dt'>
+                <div class='dt-i fad fa-wind wn'></div>
+                <div class='dt-v wn'>
+                    <span id='wn'></span>
+                    <span class='dt-tg'></span>
+                </div>
+            </div> -->
         </div>
     </main>
 
@@ -342,37 +361,50 @@
                 class='fa-lg fad fa-coffee-pot coffee'></i>
         </div>
         <div>
-            For more information go to repository project <a href="">here</a>
+            For more information go to repository project <a href='>here</a>
         </div>
         <div>
-            or email me to <a target="_new"
+            or email me to <a target=' _new'
                 href='mailto:devem.software@gmail.com'>devem.sofware@gmail.com</a>
         </div>
     </footer>
 </body>
 <script>
     (function () {
-        setInterval(UpdateDoc, 10000)
+        setInterval(UpdateDoc, 10000);
     })();
-
+    
     function $(id) {
         return document.getElementById(id)
     }
+    
+    async function geoLoc() {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            $('map').src =
+            `https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d600!2d${pos.coords.longitude}!3d${pos.coords.latitude}!3m2!1i2048!2i768!4f13!5e1!3m2!1ses-419!2sco!4v1647399527212!5m2!1ses-419!2sco`;
+        })
+    }
+    
     async function UpdateDoc() {
-
+        
+        await geoLoc();
         await fetch('http://192.168.88.6/data', {
                 method: 'GET',
             }, 60000)
             .then(async r => await r.json())
             .then(async d => {
                 const dt = d;
-                $('te').innerHTML = ((dt.t) != undefined ? await parseFloat(dt.t).toFixed(2) : '...');
-                $('hu').innerHTML = ((dt.h) != undefined ? await parseFloat(dt.h).toFixed(2) : '...');
+                $('te').innerHTML = ((dt.t) != undefined ?
+                    await parseFloat(dt.t).toFixed(2) : '...');
+                $('hu').innerHTML = ((dt.h) != undefined ?
+                    await parseFloat(dt.h).toFixed(2) : '...');
 
                 f = new Date(dt.d);
                 f.setUTCSeconds(dt.d);
-                $('fd').innerHTML = ((dt.h) != undefined ? await f.toLocaleDateString() : '...');
-                $('ft').innerHTML = ((dt.h) != undefined ? await f.toLocaleTimeString() : '...');
+                $('fd').innerHTML = ((dt.h) != undefined ? await f
+                    .toLocaleDateString() : '...');
+                $('ft').innerHTML = ((dt.h) != undefined ? await f
+                    .toLocaleTimeString() : '...');
 
             })
     }

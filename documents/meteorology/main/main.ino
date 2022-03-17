@@ -1,10 +1,13 @@
 // ==================== Librerias para los componentes
 #include <DHT.h>         // Libreria DHT
 #include <ESP8266WiFi.h> // Libreria ESP8266
+#include <Arduino.h> // Libreria para el manejo de JSON
 
 #include <LiquidCrystal_I2C.h>
 
-LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
+#include <WifiLocation.h>
+
+    LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 
 // ==================== Librerias para el manejo de fechas
 #include <NTPClient.h>
@@ -29,6 +32,9 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 #define DB_ID "hidrologia-u-distrital"                                       // Identificador de la base de datos
 #define DB_HOST "https://hidrologia-u-distrital-default-rtdb.firebaseio.com" // Direccion de la base datos
 #define DB_API_KEY "AIzaSyC0v-XlIcscm_BlAKdyYxHPzp5CQpmxBgw"                 // Clave de acceso a la bas de datos
+#define DB_REST_SECRET "tPtDKT4ZF0nanJ9QyJYZBRMsrnnc3P1Cj0CQPGWT"                // Clave de acceso a la bas de datos
+
+// #define GOOGLE_API_GEOLOCATION_KEY "AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ" // Clave de acceso a la API de geolocalizacion
 
 // ================================================================================= //
 //   Para usar la base de datos de google debe solicitar la creacion del usuario a   //
@@ -41,7 +47,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 #define FIREBASE_PASS "Maria-0227-"                            // Contraseña de validacion
 
 // ==================== Configuracion del sensor DTH
-#define DHTPIN D3         // Define el identificador del pin a usar en la placa ESP8266
+#define DHTPIN D5         // Define el identificador del pin a usar en la placa ESP8266
 #define DHTTYPE DHT11     // Define el tipo de sensor conectador a la placa ESP8266
 DHT dht(DHTPIN, DHTTYPE); // Instaciacion de la clase para el Sensor DHT
 
@@ -54,6 +60,7 @@ ESP8266WebServer server(80);
 // ==================== Conexión Wifi-Servidor
 WiFiClient client;
 WiFiUDP ntpUDP;
+// WifiLocation location(GOOGLE_API_GEOLOCATION_KEY);
 
 // ==================== Configuracion Firebase
 FirebaseData fbdo;
@@ -62,6 +69,7 @@ FirebaseConfig config;
 unsigned long sendDataPrevMillis = 0;
 
 // ==================== Inicializacion de variables
+String nodePath;
 long dataTime = 0;
 float t = 0.0;
 float h = 0.0;
@@ -84,10 +92,8 @@ void setup()
 {
 
   lcd.init(); // initialize the lcd
-
-  // Print a message to the LCD.
-  lcd.backlight();
   delay(1000);
+  lcd.backlight();
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Select MeteoLab");
@@ -131,11 +137,9 @@ void setup()
 
   // ============= Inicializacion del servidor local
   server.onNotFound(handle_NotFound);
-  server.begin();
-
   server.on("/", handle_OnConnect);
   server.on("/data", []()
-    { server.send(200, "application/json", dataJson(dt, t, h)); });
+            { server.send(200, "application/json", dataJson(dt, t, h)); });
   server.begin();
 
   // ============= Coneccion a FireBase
@@ -152,7 +156,6 @@ void setup()
 
   // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
-
 }
 
 void loop()
@@ -190,19 +193,15 @@ void loop()
     // ============= la nformacion en la base de datos de FireBase
     timeClient.update();
     dt = timeClient.getEpochTime();
-    String nodePath = (String)DB_NODE + "/" + String(dt);
+    nodePath = (String)DB_NODE + "/" + String(dt);
 
-    Serial.println("\n// ===========================================");
-    Serial.println((String) "Sending temperature (°C): " + String(t));
-    Serial.println((String) "Sending humidity     (%): " + String(h));
+    // location_t loc = location.getGeoFromWiFi();
 
-    if (Firebase.ready())
-    {
-      Serial.println("\n// ============= Saving in Firebase");
-      Serial.println(Firebase.pushFloat(fbdo, nodePath, t) ? "// ==== Saving Temperature" : fbdo.errorReason().c_str());
-      Serial.println(Firebase.pushFloat(fbdo, nodePath, h) ? "// ==== Saving Humidity" : fbdo.errorReason().c_str());
-      Serial.println("// ============= Saved in Firebase\n");
-    }
+    // Serial.println("Location request data");
+    // Serial.println(location.getSurroundingWiFiJson());
+    // Serial.println("Latitude: " + String(loc.lat, 7));
+    // Serial.println("Longitude: " + String(loc.lon, 7));
+    // Serial.println("Accuracy: " + String(loc.accuracy));
 
     postStr += "&field1=";
     postStr += String(t);
@@ -225,6 +224,21 @@ void loop()
   }
 
   client.stop();
+  client.flush();
+
+  Serial.println("\n// ===========================================");
+  Serial.println((String) "Sending temperature (°C): " + String(t));
+  Serial.println((String) "Sending humidity     (%): " + String(h));
+
+  if (client.connect(DB_HOST, 80))
+  {
+    Serial.println("\n// ============= Saving in Firebase");
+    Serial.println(Firebase.setFloat(fbdo, nodePath + "/temp", t) ? "// ==== Saving Temperature" : fbdo.errorReason().c_str());
+    Serial.println(Firebase.setFloat(fbdo, nodePath + "/humi", h) ? "// ==== Saving Humidity" : fbdo.errorReason().c_str());
+    Serial.println("// ============= Saved in Firebase\n");
+
+  }
+
   digitalWrite(ESP8266_LED, HIGH); // Apaga el led de la placa ESP8266
 
   server.handleClient();
@@ -266,4 +280,3 @@ String dataJson(int d, float t, float h)
 // TODO:
 //          1. Configuracion de la base de datos desde el dispositivo movil
 //          2. Almacenamiento en Firebase de los datos en formato Json
-

@@ -1,35 +1,14 @@
-# ht
+# HydroTools
+!['HydroTools'](https://github.com/devem-software/hydrotools/blob/main/public/favicon_transparent.png?raw=true "HydroTools")
 
-This template should help get you started developing with Vue 3 in Vite.
+**HydroTools** es una iniciativa académica personal con el fin de llevar a los estudiantes y profesionales del area hidraúlica herramientas tecnológicas para el desarrollo de proyectos y analisis de datos.
 
-## Recommended IDE Setup
+## Números del proyecto
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
+![](https://img.shields.io/github/issues/devem-software/hydrotools?style=for-the-badge)
+![](https://img.shields.io/github/forks/devem-software/hydrotools?style=for-the-badge)
+![](https://img.shields.io/github/stars/devem-software/hydrotools?style=for-the-badge)
+![](https://img.shields.io/github/license/devem-software/hydrotools?style=for-the-badge)
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+## Contacto
+![](https://img.shields.io/twitter/url?color=steelblue&label=TWITTER&style=for-the-badge&url=https%3A%2F%2Ftwitter.com%2Fdevem_software)

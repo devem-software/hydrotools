@@ -84,6 +84,7 @@ export default {
     };
 
     const optionsChart = {
+      resposive: true,
       plugins: {
         legend: {
           display: false,

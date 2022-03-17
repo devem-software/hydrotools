@@ -51,7 +51,7 @@ export default {
       active: false,
     });
 
-    const getData = async (e) => {
+    const getData = async () => {
       state.data = [];
       const data = await fetch(
         "https://api.thingspeak.com/channels/1662545/feeds.json"
@@ -68,7 +68,7 @@ export default {
       ).toLocaleTimeString();
     };
 
-    const setTheme = (e) => {
+    const setTheme = () => {
       state.active = !state.active;
       document.body.classList.toggle("td");
       document.body.classList.toggle("tl");
@@ -78,7 +78,7 @@ export default {
       state.channels = channels;
       setInterval(getData, 2000);
       navigator.geolocation.getCurrentPosition((pos) => {
-        state.geoLoc = `https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d200!2d${pos.coords.longitude}!3d${pos.coords.latitude}!3m2!1i2048!2i768!4f13!5e1!3m2!1ses-419!2sco!4v1647399527212!5m2!1ses-419!2sco`;
+        state.geoLoc = `https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d400!2d${pos.coords.longitude}!3d${pos.coords.latitude}!3m2!1i2048!2i768!4f13!5e1!3m2!1ses-419!2sco!4v1647399527212!5m2!1ses-419!2sco`;
       });
     });
 
@@ -88,13 +88,6 @@ export default {
 </script>
 
 <style lang="scss">
-$color_6: var(--hu);
-$color_7: var(--pre);
-$color_8: var(--wn);
-$color_9: #ff6e40;
-$color_10: #ffab00;
-$color_11: #2962ff;
-$font_family_1: "Outfit", sans-serif, verdana;
 
 :root {
   --bg: #fafafa;
@@ -238,16 +231,16 @@ main {
   color: var(--te);
 }
 .hu {
-  color: $color_6;
+  color: var(--hu);
 }
 .pr {
-  color: $color_7;
+  color: var(--pre);
 }
 .wn {
-  color: $color_8;
+  color: var(--wm);
 }
 .coffee {
-  color: $color_9;
+  color: #ff6e40;
   margin-left: 0.5rem;
 }
 footer {
@@ -315,10 +308,10 @@ footer {
   }
 }
 .sun {
-  color: $color_10;
+  color: #ffab00;
 }
 .moon {
-  color: $color_11;
+  color: #2962ff;
 }
 @media screen and (min-width: 380px) {
   .dt {

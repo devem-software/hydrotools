@@ -14,11 +14,11 @@ const router = createRouter({
       component: () => import("../views/IotView.vue"),
     },
     {
-      path: "/statictis",
-      name: "statictis",
-      component: () => import("../views/StatictisView.vue"),
+      path: "/statistics",
+      name: "statistics",
+      component: () => import("../views/StatisticsView.vue"),
     },
   ],
-})
+});
 
 export default router;

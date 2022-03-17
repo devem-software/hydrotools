@@ -15,7 +15,6 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 #include <ESP8266mDNS.h>
 #include <WiFiManager.h>
 #include <ESP8266WebServer.h>
-// #include <ESP8266WebServerSecure.h>
 
 // ==================== Librerias para coneccion a base datos de google
 #include <FirebaseESP8266.h>    // Firebase para ESP8266
@@ -48,8 +47,8 @@ DHT dht(DHTPIN, DHTTYPE); // Instaciacion de la clase para el Sensor DHT
 
 // ==================== Configuracion placa ESP8266
 #define ESP8266_LED 16 // Define el led a manupilar en la placa ESP8266
-// BearSSL::ESP8266WebServerSecure provisioningServer(443);
-// BearSSL::ESP8266WebServerSecure serverS(443);
+
+// ==================== Creacion del servidor local
 ESP8266WebServer server(80);
 
 // ==================== Conexión Wifi-Servidor
@@ -78,13 +77,14 @@ int utcOffset = 0;
 
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffset * 3600);
 
+// ==================== Incluir diseño webserver local
 #include "index.h"
-// #include "secure.h"
 
 void setup()
 {
 
   lcd.init(); // initialize the lcd
+
   // Print a message to the LCD.
   lcd.backlight();
   delay(1000);
@@ -105,9 +105,9 @@ void setup()
 
   WiFiManager wm;
 
-  if (!wm.autoConnect("MeteoLab", "hidro2021"))
   // ============ Se crea una red wifi provisional
   // ============ con el nombre de la red y la contraseña
+  if (!wm.autoConnect("MeteoLab", "hidro2021"))
   {
     lcd.home();
     lcd.clear();
@@ -121,10 +121,6 @@ void setup()
 
   timeClient.begin();
 
-  // wm.autoConnect("MeteoLab"); // Red WiFi creada por la placa ESP8266
-  // Punto en donde se tiene que buscar el acceso
-  // para que la lectura inicie
-
   Serial.println("IP: ");
   Serial.println(WiFi.localIP());
 
@@ -134,16 +130,9 @@ void setup()
   }
 
   // ============= Inicializacion del servidor local
-  // server.on("/", secureRedirect);
   server.onNotFound(handle_NotFound);
   server.begin();
 
-  // serverS.getServer().setRSACert(new BearSSL::X509List(serverCert), new BearSSL::PrivateKey(serverKey));
-  // serverS.on("/", handle_OnConnect);
-  // serverS.on("/data", []()
-  //   { serverS.send(200, "application/json", dataJson(dt, t, h)); });
-  // serverS.begin();
- 
   server.on("/", handle_OnConnect);
   server.on("/data", []()
     { server.send(200, "application/json", dataJson(dt, t, h)); });
@@ -163,7 +152,7 @@ void setup()
 
   // ============= Inicio de trabajo del |sensor DHT11
   dht.begin();
- 
+
 }
 
 void loop()
@@ -192,6 +181,7 @@ void loop()
     lcd.print("Revise el sistema");
     return;
   }
+
   if (client.connect(THINK_SERVER, 80))
   {
     String postStr = THINK_KEY;
@@ -218,6 +208,7 @@ void loop()
     postStr += String(t);
     postStr += "&field2=";
     postStr += String(h);
+
     // ==================== Creacion de cabeceras REST para el envio de la informacion
     // ==================== a la pagina de thinkspeak.com
     Serial.println("// ============= Saving in ThinkSpeak");
@@ -237,7 +228,6 @@ void loop()
   digitalWrite(ESP8266_LED, HIGH); // Apaga el led de la placa ESP8266
 
   server.handleClient();
-  // serverS.handleClient();
 
   MDNS.update();
 
@@ -273,12 +263,7 @@ String dataJson(int d, float t, float h)
   return dataJ;
 }
 
-void secureRedirect()
-{
-  // server.sendHeader("Location", String("https://esp8266.local"), true);
-  // server.send(301, "text/plain", "");
-}
-
 // TODO:
 //          1. Configuracion de la base de datos desde el dispositivo movil
 //          2. Almacenamiento en Firebase de los datos en formato Json
+

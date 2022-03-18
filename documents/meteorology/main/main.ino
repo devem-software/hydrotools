@@ -17,6 +17,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 #include <ESP8266mDNS.h>
 #include <WiFiManager.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 
 // ==================== Librerias para coneccion a base datos de google
 #include <FirebaseESP8266.h>    // Firebase para ESP8266
@@ -31,9 +32,11 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 #define DB_ID "hidrologia-u-distrital"                                       // Identificador de la base de datos
 #define DB_HOST "https://hidrologia-u-distrital-default-rtdb.firebaseio.com" // Direccion de la base datos
 #define DB_API_KEY "AIzaSyC0v-XlIcscm_BlAKdyYxHPzp5CQpmxBgw"                 // Clave de acceso a la bas de datos
-#define DB_REST_SECRET "tPtDKT4ZF0nanJ9QyJYZBRMsrnnc3P1Cj0CQPGWT"                // Clave de acceso a la bas de datos
+#define DB_REST_SECRET "tPtDKT4ZF0nanJ9QyJYZBRMsrnnc3P1Cj0CQPGWT"            // Clave de acceso a la bas de datos
 
 #define GOOGLE_API_GEOLOCATION_KEY "AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ" // Clave de acceso a la API de geolocalizacion
+#define KEY_GEOLOC "key=AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ"
+#define SERVER_GEOLOC "https://www.googleapis.com/geolocation/v1/geolocale"
 
 // ================================================================================= //
 //   Para usar la base de datos de google debe solicitar la creacion del usuario a   //
@@ -51,14 +54,16 @@ LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 DHT dht(DHTPIN, DHTTYPE); // Instaciacion de la clase para el Sensor DHT
 
 // ==================== Configuracion placa ESP8266
-#define ESP8266_LED 16 // Define el led a manupilar en la placa ESP8266
+#define ESP8266_LED 2 // Define el led a manupilar en la placa ESP8266
 
 // ==================== Creacion del servidor local
-ESP8266WebServer server(80);
+#define SERVER_PORT 80
+ESP8266WebServer server(SERVER_PORT);
 
 // ==================== Conexión Wifi-Servidor
 WiFiClient client;
 WiFiUDP ntpUDP;
+HTTPClient http;
 
 WifiLocation location(GOOGLE_API_GEOLOCATION_KEY);
 
@@ -129,13 +134,16 @@ void setup()
     ESP.reset();
   }
 
-  location_t loc = location.getGeoFromWiFi();
 
-  Serial.println("Location request data");
-  Serial.println(location.getSurroundingWiFiJson());
-  Serial.println("Latitude: " + String(loc.lat, 7));
-  Serial.println("Longitude: " + String(loc.lon, 7));
-  Serial.println("Accuracy: " + String(loc.accuracy));
+
+  http.begin(client, (String)SERVER_GEOLOC + "?" + (String)KEY_GEOLOC);
+  delay(1000); // See if this prevents the problm with connection refused and deep sleep
+  http.addHeader("Content-Type", "application/json");
+  int httpCode = http.POST("");
+  String payload = http.getString();
+  Serial.println(httpCode); // Print HTTP return code
+  Serial.println(payload);  // Print request response payload
+  http.end();
 
   timeClient.begin();
 
@@ -149,9 +157,10 @@ void setup()
 
   // ============= Inicializacion del servidor local
   server.onNotFound(handle_NotFound);
-  server.on("/", handle_OnConnect);
   server.on("/data", []()
             { server.send(200, "application/json", dataJson(dataTime, t, h)); });
+  server.on("/", handle_OnConnect);
+
   server.begin();
 
   // ============= Coneccion a FireBase
@@ -197,7 +206,7 @@ void loop()
     return;
   }
 
-  if (client.connect(THINK_SERVER, 80))
+  if (client.connect(THINK_SERVER, SERVER_PORT))
   {
     String postStr = THINK_KEY;
 
@@ -240,7 +249,6 @@ void loop()
     Serial.println(Firebase.setFloat(fbdo, nodePath + "/temp", t) ? "// ==== Saving Temperature" : fbdo.errorReason().c_str());
     Serial.println(Firebase.setFloat(fbdo, nodePath + "/humi", h) ? "// ==== Saving Humidity" : fbdo.errorReason().c_str());
     Serial.println("// ============= Saved in Firebase\n");
-
   }
 
   digitalWrite(ESP8266_LED, HIGH); // Apaga el led de la placa ESP8266

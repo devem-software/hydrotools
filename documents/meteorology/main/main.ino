@@ -1,13 +1,12 @@
 // ==================== Librerias para los componentes
 #include <DHT.h>         // Libreria DHT
 #include <ESP8266WiFi.h> // Libreria ESP8266
-#include <Arduino.h> // Libreria para el manejo de JSON
 
 #include <LiquidCrystal_I2C.h>
 
 #include <WifiLocation.h>
 
-    LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
 
 // ==================== Librerias para el manejo de fechas
 #include <NTPClient.h>
@@ -34,7 +33,7 @@
 #define DB_API_KEY "AIzaSyC0v-XlIcscm_BlAKdyYxHPzp5CQpmxBgw"                 // Clave de acceso a la bas de datos
 #define DB_REST_SECRET "tPtDKT4ZF0nanJ9QyJYZBRMsrnnc3P1Cj0CQPGWT"                // Clave de acceso a la bas de datos
 
-// #define GOOGLE_API_GEOLOCATION_KEY "AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ" // Clave de acceso a la API de geolocalizacion
+#define GOOGLE_API_GEOLOCATION_KEY "AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ" // Clave de acceso a la API de geolocalizacion
 
 // ================================================================================= //
 //   Para usar la base de datos de google debe solicitar la creacion del usuario a   //
@@ -60,7 +59,8 @@ ESP8266WebServer server(80);
 // ==================== Conexión Wifi-Servidor
 WiFiClient client;
 WiFiUDP ntpUDP;
-// WifiLocation location(GOOGLE_API_GEOLOCATION_KEY);
+
+WifiLocation location(GOOGLE_API_GEOLOCATION_KEY);
 
 // ==================== Configuracion Firebase
 FirebaseData fbdo;
@@ -70,11 +70,15 @@ unsigned long sendDataPrevMillis = 0;
 
 // ==================== Inicializacion de variables
 String nodePath;
-long dataTime = 0;
+
+float lat = 0;
+float lon = 0;
+
 float t = 0.0;
 float h = 0.0;
+
 int d = 10000;
-long dt = 0;
+long dataTime = 0;
 int utcOffset = 0;
 // Define fecha y hora segun uso horario
 // Ajustado en segundos * El uso horario
@@ -125,6 +129,14 @@ void setup()
     ESP.reset();
   }
 
+  location_t loc = location.getGeoFromWiFi();
+
+  Serial.println("Location request data");
+  Serial.println(location.getSurroundingWiFiJson());
+  Serial.println("Latitude: " + String(loc.lat, 7));
+  Serial.println("Longitude: " + String(loc.lon, 7));
+  Serial.println("Accuracy: " + String(loc.accuracy));
+
   timeClient.begin();
 
   Serial.println("IP: ");
@@ -139,7 +151,7 @@ void setup()
   server.onNotFound(handle_NotFound);
   server.on("/", handle_OnConnect);
   server.on("/data", []()
-            { server.send(200, "application/json", dataJson(dt, t, h)); });
+            { server.send(200, "application/json", dataJson(dataTime, t, h)); });
   server.begin();
 
   // ============= Coneccion a FireBase
@@ -192,16 +204,8 @@ void loop()
     // ============= Creacion del nodo con una marca de tiempo para almacenar
     // ============= la nformacion en la base de datos de FireBase
     timeClient.update();
-    dt = timeClient.getEpochTime();
-    nodePath = (String)DB_NODE + "/" + String(dt);
-
-    // location_t loc = location.getGeoFromWiFi();
-
-    // Serial.println("Location request data");
-    // Serial.println(location.getSurroundingWiFiJson());
-    // Serial.println("Latitude: " + String(loc.lat, 7));
-    // Serial.println("Longitude: " + String(loc.lon, 7));
-    // Serial.println("Accuracy: " + String(loc.accuracy));
+    dataTime = timeClient.getEpochTime();
+    nodePath = (String)DB_NODE + "/" + String(dataTime);
 
     postStr += "&field1=";
     postStr += String(t);

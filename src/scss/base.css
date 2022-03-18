@@ -1,0 +1,20 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  font-weight: normal;
+}
+
+html, body, #app {
+  display:flex;
+  flex-direction:column;
+  height: 100vh;
+  max-height: 100vh;
+  font-family: "Outfit", sans-serif, verdana;
+  font-size: 16px;
+  color: var(--clr);
+  background: var(--bg);
+}

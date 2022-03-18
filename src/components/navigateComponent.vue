@@ -14,14 +14,11 @@
   </nav>
 </template>
 
-<script>
-export default {
-
-}
-</script>
+<script></script>
 
 <style lang="scss" scoped>
 nav {
+  width: 100%;
   ul {
     height: 2rem;
     display: flex;

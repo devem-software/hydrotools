@@ -1,17 +1,24 @@
 <template>
-  <div class="map">
-    <!-- <iframe id="map" :src="state.geoLoc" frameborder="0" style="width: 100%; height: auto"></iframe> -->
-  </div>
   <div class="data">
-    <LineChart ref="chartRef" :chartData="state.collecH" :options="optionsChart"></LineChart>
-    <LineChart ref="chartRef" :chartData="state.collecT" :options="optionsChart"></LineChart>
+    <LineChart
+      ref="chartRef"
+      :chartData="state.collecH"
+      :options="optionsChart"
+      class="chart"
+    ></LineChart>
+    <LineChart
+      ref="chartRef"
+      :chartData="state.collecT"
+      :options="optionsChart"
+      class="chart"
+    ></LineChart>
   </div>
 </template>
 
 <script>
 import { LineChart } from "vue-chart-3";
 import { Chart, registerables } from "chart.js";
-import { ref, onMounted, reactive, computed } from "vue";
+import { ref, onMounted, reactive } from "vue";
 
 Chart.register(...registerables);
 
@@ -21,7 +28,7 @@ export default {
   components: {
     LineChart,
   },
-  setup () {
+  setup() {
     const state = reactive({
       data: [],
       info: [],
@@ -106,7 +113,7 @@ export default {
     const updateData = () => {
       setInterval(() => {
         getData();
-      }, 5000);
+      }, 1000);
     };
 
     onMounted(async () => {
@@ -120,4 +127,17 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scpoped>
+.data {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 2rem;
+  .chart {
+    flex: 1;
+    width: 100%;
+  }
+}
+</style>

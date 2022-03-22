@@ -1,12 +1,16 @@
 // ==================== Librerias para los componentes
 #include <DHT.h>         // Libreria DHT
 #include <ESP8266WiFi.h> // Libreria ESP8266
+#include <Wire.h>        // Libreria para I2C
 
-#include <LiquidCrystal_I2C.h>
+// ==================== Librerias para los display
+#include <OLED.h>              // Libreria para el display OLED
+// #include <LiquidCrystal_I2C.h> // Libreria para el display LCD
 
 #include <WifiLocation.h>
 
-LiquidCrystal_I2C lcd(0x27, 16, 2); // Definicion del LCD
+OLED display(2,1);                   // Creacion del display OLED
+// LiquidCrystal_I2C lcd(0x27, 16, 2);  // Dreacion del display LCD
 
 // ==================== Librerias para el manejo de fechas
 #include <NTPClient.h>
@@ -100,14 +104,19 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffset * 3600);
 void setup()
 {
 
-  lcd.init(); // initialize the lcd
-  delay(1000);
-  lcd.backlight();
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Select MeteoLab");
-  lcd.setCursor(0, 1);
-  lcd.print("open 192.168.4.1");
+  // lcd.init(); // initialize the lcd
+  // delay(1000);
+  // lcd.backlight();
+  // lcd.clear();
+  // lcd.setCursor(0, 0);
+  // lcd.print("Select MeteoLab");
+  // lcd.setCursor(0, 1);
+  // lcd.print("open 192.168.4.1");
+
+  display.begin(); // initialize the display
+  display.print("Select MeteoLab",1);
+  display.print("open 192.168.4.1",2);
+  display.clear();
 
   pinMode(ESP8266_LED, OUTPUT); // Configuracion led de la placa ESP8266
 
@@ -124,16 +133,20 @@ void setup()
   // ============ con el nombre de la red y la contraseña
   if (!wm.autoConnect("MeteoLab", "hidro2021"))
   {
-    lcd.home();
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Error en la conexion");
-    lcd.setCursor(0, 1);
-    lcd.print("Intente de nuevo");
+    // lcd.home();
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("Error en la conexion");
+    // lcd.setCursor(0, 1);
+    // lcd.print("Intente de nuevo");
+    // delay(2000);
+    // ESP.reset();
+    display.clear();
+    display.print("Error en la conexion",1);
+    display.print("Intente de nuevo",2);
     delay(2000);
     ESP.reset();
   }
-
 
 
   http.begin(client, (String)SERVER_GEOLOC + "?" + (String)KEY_GEOLOC);
@@ -188,21 +201,28 @@ void loop()
   h = dht.readHumidity();
   t = dht.readTemperature();
 
-  lcd.home();
-  lcd.clear();
-  lcd.setCursor(2, 0);
-  lcd.print(WiFi.localIP());
-  lcd.setCursor(0, 1);
-  lcd.print("T " + String(t) + "  H " + String(h));
+  // lcd.home();
+  // lcd.clear();
+  // lcd.setCursor(2, 0);
+  // lcd.print(WiFi.localIP());
+  // lcd.setCursor(0, 1);
+  // lcd.print("T " + String(t) + "  H " + String(h));
+
+  display.clear();
+  display.print(WiFi.localIP().toString(),1);
+  display.print("T " + String(t) + "  H " + String(h),2);
 
   if (isnan(h) || isnan(t))
   {
-    lcd.home();
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Error de lectura");
-    lcd.setCursor(0, 1);
-    lcd.print("Revise el sistema");
+    // lcd.home();
+    // lcd.clear();
+    // lcd.setCursor(0, 0);
+    // lcd.print("Error de lectura");
+    // lcd.setCursor(0, 1);
+    // lcd.print("Revise el sistema");
+    display.clear();
+    display.print("Error de lectura",1);
+    display.print("Revise el sistema",2);
     return;
   }
 
@@ -262,7 +282,8 @@ void loop()
   // pero para no saturar la base de datos se recomiendan
   // lecturas entre 30000 milisegundos y 120000 milisegundos
 
-  lcd.clear();
+  // lcd.clear();
+  display.clear();
 }
 
 void handle_OnConnect()

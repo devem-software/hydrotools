@@ -16,7 +16,7 @@
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-#include <WifiLocation.h>
+// #include <WifiLocation.h>
 
 // ==================== Librerias para el manejo de fechas
 #include <NTPClient.h>
@@ -44,9 +44,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define DB_API_KEY "AIzaSyC0v-XlIcscm_BlAKdyYxHPzp5CQpmxBgw"                 // Clave de acceso a la bas de datos
 #define DB_REST_SECRET "tPtDKT4ZF0nanJ9QyJYZBRMsrnnc3P1Cj0CQPGWT"            // Clave de acceso a la bas de datos
 
-#define GOOGLE_API_GEOLOCATION_KEY "AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ" // Clave de acceso a la API de geolocalizacion
-#define KEY_GEOLOC "key=AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ"
-#define SERVER_GEOLOC "https://www.googleapis.com/geolocation/v1/geolocale"
+// #define GOOGLE_API_GEOLOCATION_KEY "AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ" // Clave de acceso a la API de geolocalizacion
+// #define KEY_GEOLOC "/geolocation/v1/geolocale?key=AIzaSyAor4_IQ6zbgIQ44djnjKo1EdsFD8CyqfQ"
+// #define SERVER_GEOLOC "https://www.googleapis.com"
 
 // ================================================================================= //
 //   Para usar la base de datos de google debe solicitar la creacion del usuario a   //
@@ -75,7 +75,7 @@ WiFiClient client;
 WiFiUDP ntpUDP;
 HTTPClient http;
 
-WifiLocation location(GOOGLE_API_GEOLOCATION_KEY);
+// WifiLocation location(GOOGLE_API_GEOLOCATION_KEY);
 
 // ==================== Configuracion Firebase
 FirebaseData fbdo;
@@ -292,6 +292,7 @@ void loop()
 
   if (client.connect(THINK_SERVER, SERVER_PORT))
   {
+
     String postStr = THINK_KEY;
 
     // ============= Creacion del nodo con una marca de tiempo para almacenar
@@ -337,57 +338,23 @@ void loop()
 
   digitalWrite(ESP8266_LED, HIGH); // Apaga el led de la placa ESP8266
 
-  // if (client.connect(SERVER_GEOLOC, SERVER_PORT))
-  // {
-  //   String postStr = KEY_GEOLOC;
-
-  //   // ============= Creacion del nodo con una marca de tiempo para almacenar
-  //   // ============= la nformacion en la base de datos de FireBase
-  //   timeClient.update();
-  //   dataTime = timeClient.getEpochTime();
-  //   nodePath = (String)DB_NODE + "/" + String(dataTime);
-
-  //   postStr += "&field1=";
-  //   postStr += String(t);
-  //   postStr += "&field2=";
-  //   postStr += String(h);
-
-  //   // ==================== Creacion de cabeceras REST para el envio de la informacion
-  //   // ==================== a la pagina de thinkspeak.com
-  //   Serial.println("// ============= Saving in ThinkSpeak");
-  //   client.print("POST /update HTTP/1.1\n");
-  //   client.print((String) "Host: " + SERVER_GEOLOC + "\n");
-  //   client.print("Connection: close\n");
-  //   client.print((String) "key: " + KEY_GEOLOC + "\n");
-  //   client.print("Content-Type: application/json\n");
-  //   client.print("Content-Length: ");
-  //   client.print(postStr.length());
-  //   client.print("\n\n");
-  //   client.print(postStr);
-  //   Serial.println("// ============= Saved in ThinkSpeak");
-  // }
-
-  // client.stop();
-  // client.flush();
-
-  // http.begin(client, (String)SERVER_GEOLOC + "?" + (String)KEY_GEOLOC);
+  // http.begin(client, SERVER_GEOLOC);
   // delay(100); // See if this prevents the problm with connection refused and deep sleep
   // http.addHeader("Content-Type", "application/json");
   // delay(100); // See if this prevents the problm with connection refused and deep sleep
-  // int httpCode = http.POST("{\"macAddress\":\"90:FD:73:A5:61:6F\",\"signalStrength\":-90,\"channel\":11}"");
+  // int httpCode = http.POST(KEY_GEOLOC);
   // String payload = http.getString();
   // Serial.println(httpCode); // Print HTTP return code
   // Serial.println(payload);  // Print request response payload
   // http.end();
 
-  location_t loc = location.getGeoFromWiFi();
+  // location_t loc = location.getGeoFromWiFi();
 
-  Serial.println("Location request data");
-  Serial.println(location.getSurroundingWiFiJson());
-  Serial.println(location.getStatus());
-  Serial.println("Latitude: " + String(loc.lat, 7));
-  Serial.println("Longitude: " + String(loc.lon, 7));
-  Serial.println("Accuracy: " + String(loc.accuracy));
+  // Serial.println("Location request data");
+  // Serial.println(location.getSurroundingWiFiJson());
+  // Serial.println("Latitude: " + String(loc.lat, 7));
+  // Serial.println("Longitude: " + String(loc.lon, 7));
+  // Serial.println("Accuracy: " + String(loc.accuracy));
 
   MDNS.update();
   delay(d); // Tiempo de retraso entre las lecturas

@@ -28,16 +28,9 @@ DHT dht(DHTPIN, DHTTYPE); // Instaciacion de la clase para el Sensor DHT
 // ==================== Configuracion placa ESP8266
 #define ESP8266_LED 2 // Define el led a manupilar en la placa ESP8266
 
-// ==================== Creacion del servidor local
-// ESP8266WebServer server(SERVER_PORT);
-
 // ==================== Conexión Wifi-Servidor
 WiFiClient client;
-// HTTPClient http;
 
-// ==================== Incluir diseño webserver local
-// #include "views/index.h"
-// #include "views/inteud.h"
 
 void setup()
 {
@@ -56,20 +49,7 @@ void setup()
   WiFiManager wm;
 
   debugInfo();
-  // if (!wm.autoConnect(SSID, PASS))
-  //   printError("Error en la conexión\n\nIntente de nuevo");
 
-  // Serial.println("IP: ");
-  // Serial.println(WiFi.localIP());
-
-  // if (MDNS.begin("esp8266"))
-  //   Serial.println("MDNS responder started");
-
-  // ============= Inicializacion del servidor local
-  // server.on("/", handle_OnConnect);
-  // server.on("/data", handle_ApiData);
-  // server.onNotFound(handle_NotFound);
-  // server.begin();
   InitializeWebServer();
   InitializeThingSpeak();
   InitializeFirebase();

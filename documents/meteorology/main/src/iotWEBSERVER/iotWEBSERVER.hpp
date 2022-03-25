@@ -6,20 +6,14 @@ void handle_ApiData();
 void handle_NotFound();
 String dataJson(int d, float t, float h);
 
-void InitializeWebServer()
-{
-  server.on("/", []()
-            { server.send(200, "text/html", index_html); });
-  server.on("/data", []()
-            { dataJson(dataTime, t, h);
-              server.send(200, "application/json", dataWebServer); });
-  server.onNotFound([]()
-                    { server.send(404, "text/plain", "Opps! regrese a la pagina anterior"); });
+void InitializeWebServer() {
+  server.on("/", handle_OnConnect);
+  server.on("/data", handle_ApiData);
+  server.onNotFound(handle_NotFound);
   server.begin();
 }
 
-void updateWebServer()
-{
+void updateWebServer() {
   server.handleClient();
 }
 
@@ -30,7 +24,7 @@ void handle_OnConnect()
 
 void handle_ApiData()
 {
-  // String data = dataJson(dataTime, t, h);
+  dataJson(dataTime, t, h);
   server.send(200, "application/json", dataWebServer);
 }
 

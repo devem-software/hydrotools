@@ -33,22 +33,25 @@ void SaveFirebase(float fT, float fH)
     Serial.println(Firebase.setFloat(fbdo, path + "/temp", fT) ? "// ==== Saving Temperature" : fbdo.errorReason().c_str());
     Serial.println(Firebase.setFloat(fbdo, path + "/humi", fH) ? "// ==== Saving Humidity" : fbdo.errorReason().c_str());
   }
+  sClient.stop();
+  sClient.flush();
 }
 
 void InitializeThingSpeak()
 {
-  if (sClient.connect(THINK_SERVER, SERVER_PORT))
-  {
-    ThingSpeak.begin(sClient);
-  }
+  ThingSpeak.begin(sClient);
 }
 
 void SaveThingSpeak(float sT, float sH)
 {
-
-  Serial.println("// ==== Saving Temperature");
-  ThingSpeak.setField(1, sT);
-  Serial.println("// ==== Saving Humidity");
-  ThingSpeak.setField(2, sH);
-  ThingSpeak.writeFields(THINK_CHANNEL, THINK_KEY);
+  if (sClient.connect(THINK_SERVER, SERVER_PORT))
+  {
+    Serial.println("// ==== Saving Temperature");
+    ThingSpeak.setField(1, sT);
+    Serial.println("// ==== Saving Humidity");
+    ThingSpeak.setField(2, sH);
+    ThingSpeak.writeFields(THINK_CHANNEL, THINK_KEY);
+  }
+  sClient.stop();
+  sClient.flush();
 }

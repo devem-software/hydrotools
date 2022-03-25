@@ -10,3 +10,9 @@ void debugInfo(){
   if (MDNS.begin("esp8266"))
     Serial.println("MDNS responder started");
 }
+
+void debugData(float t, float h) {
+  Serial.println("\n// ===========================================");
+  Serial.println((String) "Sending temperature (°C): " + String(t));
+  Serial.println((String) "Sending humidity     (%): " + String(h));
+}

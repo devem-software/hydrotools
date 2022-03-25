@@ -78,14 +78,9 @@ void loop()
     return;
   }
 
-  Serial.println("\n// ===========================================");
-  Serial.println((String) "Sending temperature (°C): " + String(t));
-  Serial.println((String) "Sending humidity     (%): " + String(h));
+  debugData(t, h);
 
-  // if (client.connect(THINK_SERVER, SERVER_PORT))
   SaveThingSpeak(t, h);
-
-  // if (client.connect(DB_HOST, SERVER_PORT))
   SaveFirebase(t, h);
 
   getGEOLOC();
@@ -99,35 +94,6 @@ void loop()
   // lecturas entre 30000 milisegundos y 120000 milisegundos
 }
 
-// void handle_OnConnect()
-// {
-//   String index = index_html;
-//   server.send(200, "text/html", index_html);
-// }
-
-// void handle_ApiData()
-// {
-//   String data = dataJson(dataTime, t, h);
-//   server.send(200, "application/json", data);
-// }
-
-// void handle_NotFound()
-// {
-//   server.send(404, "text/plain", "Opps! regrese a la pagina anterior");
-// }
-
-// String dataJson(int d, float t, float h)
-// {
-//   String dataJ = "{ \"d\": ";
-//   dataJ += String(d);
-//   dataJ += " , \"t\" : ";
-//   dataJ += String(t);
-//   dataJ += " , \"h\" : ";
-//   dataJ += String(h);
-//   dataJ += "}";
-
-//   return dataJ;
-// }
 
 // TODO:
 //          1. Configuracion de la base de datos desde el dispositivo movil

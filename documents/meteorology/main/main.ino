@@ -1,43 +1,34 @@
-
-
-// ==================== Librerias para los componentes
-#include <DHT.h>         // Libreria DHT
 #include <ESP8266WiFi.h> // Libreria ESP8266
 
 #include "src/variables.h"
+#include "src/iotDHT/iotDHT.hpp"
 #include "src/iotDATABASE/iotDATABASE.hpp"
 #include "src/iotOLED/iotOLED.hpp"
 #include "src/iotGEOLOC/iotGEOLOC.hpp"
 #include "src/iotDEBUG/iotDEBUG.hpp"
 #include "src/iotWEBSERVER/iotWEBSERVER.hpp"
 
-// ==================== Librerias para el manejo de fechas
-
-// ==================== Librerias para la creacion de un servidor web
-// #include <DNSServer.h>
-// #include <ESP8266mDNS.h>
 #include <WiFiManager.h>
-// #include <ESP8266WebServer.h>
-// #include <ESP8266HTTPClient.h>
-
-// ==================== Configuracion del sensor DTH
-#define DHTPIN D5         // Define el identificador del pin a usar en la placa ESP8266
-#define DHTTYPE DHT11     // Define el tipo de sensor conectador a la placa ESP8266
-DHT dht(DHTPIN, DHTTYPE); // Instaciacion de la clase para el Sensor DHT
-
-// ==================== Configuracion placa ESP8266
-#define ESP8266_LED 2 // Define el led a manupilar en la placa ESP8266
 
 // ==================== Conexión Wifi-Servidor
 WiFiClient client;
 
+// ==================== ZONA DE CONFIGURACION DE LA ESTACION
+// ==================== 1 PARA ACTIVAR SERVICIOS
+// ==================== 0 PARA DESACTIVAR SERVICIOS
+#define DEBUG 1
+#define OLED 1
+#define WEB_SERVER 1
+#define FIREBASE 1
+#define THINGSPEAK 1
+#define GEOLOCATION 1
 
 void setup()
 {
   Serial.begin(115200);
   Serial.setDebugOutput(true);
 
-  pinMode(ESP8266_LED, OUTPUT); // Configuracion led de la placa ESP8266
+  pinMode(ESP8266_LED, OUTPUT);
 
   InitializeOLED();
   printWiFiManager();
@@ -54,22 +45,17 @@ void setup()
   InitializeThingSpeak();
   InitializeFirebase();
   InitializeGEOLOC();
-
-  // ============= Inicio de trabajo del |sensor DHT11
-  dht.begin();
+  InitializeDHT();
 }
 
 void loop()
 {
 
-  digitalWrite(ESP8266_LED, LOW); // Enciende el led de la placa ESP8266
+  digitalWrite(ESP8266_LED, LOW);
 
-  // ============= Toma de lecturas del sensor DHT
-  h = dht.readHumidity();
-  t = dht.readTemperature();
-
-  // server.handleClient();
+  updateDHT();
   updateWebServer();
+
   printInfo(t, h);
 
   if (isnan(h) || isnan(t))
@@ -79,19 +65,14 @@ void loop()
   }
 
   debugData(t, h);
-
   SaveThingSpeak(t, h);
   SaveFirebase(t, h);
-
   getGEOLOC();
 
-  digitalWrite(ESP8266_LED, HIGH); // Apaga el led de la placa ESP8266
+  digitalWrite(ESP8266_LED, HIGH);
 
   MDNS.update();
-  delay(d); // Tiempo de retraso entre las lecturas
-  // Se recomiendan minimo 10000 milisegundos entre lecturas
-  // pero para no saturar la base de datos se recomiendan
-  // lecturas entre 30000 milisegundos y 120000 milisegundos
+  delay(d)
 }
 
 

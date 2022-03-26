@@ -1,3 +1,5 @@
+#include "variablesComponents.h"
+
 // ==================== Inicializacion de variables
 #define SSID "METEOROLOGIA"
 #define PASS "estacion2022"

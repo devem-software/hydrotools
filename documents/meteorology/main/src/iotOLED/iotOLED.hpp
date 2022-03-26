@@ -4,6 +4,7 @@
 void InitializeOLED()
 {
   display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+  display.cp437(true);
   display.clearDisplay();
   display.drawBitmap(4, 2, image_data_inteud, 120, 62, SSD1306_WHITE);
   display.display();
@@ -50,10 +51,14 @@ void printInfo(float oT, float oH)
   display.println("OPEN: " + WiFi.localIP().toString());
   display.println();
   display.setTextSize(2);
-  display.println("T: " + String(oT));
+  display.print("T " + String(oT) + " ");
+  display.write(7);
+  display.write(67);
+  display.println();
   display.setTextSize(1);
   display.println();
   display.setTextSize(2);
-  display.println("H: " + String(oH));
+  display.print("H " + String(oH) + " ");
+  display.write(37);
   display.display();
 }

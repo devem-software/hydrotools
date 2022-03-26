@@ -6,42 +6,57 @@ void handle_ApiData();
 void handle_NotFound();
 String dataJson(int d, float t, float h);
 
-void InitializeWebServer() {
-  server.on("/", handle_OnConnect);
-  server.on("/data", handle_ApiData);
-  server.onNotFound(handle_NotFound);
+void InitializeWebServer()
+{
+
+  // server.on("/", handle_OnConnect);
+  // server.on("/data", handle_ApiData);
+  // server.onNotFound(handle_NotFound);
+
+  server.on("/", []()
+            { server.send(200, "text/html", index_html); });
+
+  server.on("/data", []()
+            {
+    String dataJ = "{ \"d\": " + String(dataTime) + " , \"t\" : " + String(t) + " , \"h\" : " + String(h) + "}";
+    server.send(200, "application/json", dataJ); });
+
+  server.onNotFound([]()
+                    { server.send(404, "text/plain", "Opps! regrese a la pagina anterior"); });
+
   server.begin();
 }
 
-void updateWebServer() {
+void updateWebServer()
+{
   server.handleClient();
 }
 
-void handle_OnConnect()
-{
-  server.send(200, "text/html", index_html);
-}
+// void handle_OnConnect()
+// {
+//   server.send(200, "text/html", index_html);
+// }
 
-void handle_ApiData()
-{
-  dataJson(dataTime, t, h);
-  server.send(200, "application/json", dataWebServer);
-}
+// void handle_ApiData()
+// {
+//   dataJson(dataTime, t, h);
+//   server.send(200, "application/json", dataWebServer);
+// }
 
-void handle_NotFound()
-{
-  server.send(404, "text/plain", "Opps! regrese a la pagina anterior");
-}
+// void handle_NotFound()
+// {
+//   server.send(404, "text/plain", "Opps! regrese a la pagina anterior");
+// }
 
-String dataJson(int d, float t, float h)
-{
-  String dataJ = "{ \"d\": ";
-  dataJ += String(d);
-  dataJ += " , \"t\" : ";
-  dataJ += String(t);
-  dataJ += " , \"h\" : ";
-  dataJ += String(h);
-  dataJ += "}";
+// String dataJson(int d, float t, float h)
+// {
+//   String dataJ = "{ \"d\": ";
+//   dataJ += String(d);
+//   dataJ += " , \"t\" : ";
+//   dataJ += String(t);
+//   dataJ += " , \"h\" : ";
+//   dataJ += String(h);
+//   dataJ += "}";
 
-  dataWebServer = dataJ;
-}
+//   dataWebServer = dataJ;
+// }

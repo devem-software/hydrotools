@@ -72,9 +72,9 @@ void loop()
   digitalWrite(ESP8266_LED, HIGH);
 
   MDNS.update();
-  delay(d)
+  delay(d);
 }
 
-
 // TODO:
-//          1. Configuracion de la base de datos desde el dispositivo movil
+//          1. Configuración de la base de datos desde el dispositivo móvil
+//          2. Validaciones para el uso de los servicios

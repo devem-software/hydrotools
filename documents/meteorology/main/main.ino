@@ -1,5 +1,3 @@
-#include <ESP8266WiFi.h> // Libreria ESP8266
-
 #include "src/variables.h"
 #include "src/iotDHT/iotDHT.hpp"
 #include "src/iotDATABASE/iotDATABASE.hpp"
@@ -7,11 +5,7 @@
 #include "src/iotGEOLOC/iotGEOLOC.hpp"
 #include "src/iotDEBUG/iotDEBUG.hpp"
 #include "src/iotWEBSERVER/iotWEBSERVER.hpp"
-
-#include <WiFiManager.h>
-
-// ==================== Conexión Wifi-Servidor
-WiFiClient client;
+#include "src/iotWIFI/iotWIFI.hpp"
 
 // ==================== ZONA DE CONFIGURACION DE LA ESTACION
 // ==================== 1 PARA ACTIVAR SERVICIOS
@@ -29,15 +23,12 @@ void setup()
   Serial.setDebugOutput(true);
 
   pinMode(ESP8266_LED, OUTPUT);
+  digitalWrite(ESP8266_LED, LOW);
 
   InitializeOLED();
   printWiFiManager();
 
-  WiFi.mode(WIFI_STA); // Inicia la placa ESP8266 en modo
-  // STATION       = WIFI_STA
-  // ACCESS POINT  = WIFI_AP
-
-  WiFiManager wm;
+  InitializeWiFi();
 
   debugInfo();
 
@@ -51,12 +42,12 @@ void setup()
 void loop()
 {
 
-  digitalWrite(ESP8266_LED, LOW);
+  digitalWrite(ESP8266_LED, HIGH);
 
   updateDHT();
   updateWebServer();
 
-  printInfo(t, h);
+  printInfo(dataTime, t, h);
 
   if (isnan(h) || isnan(t))
   {
@@ -69,10 +60,9 @@ void loop()
   SaveFirebase(t, h);
   getGEOLOC();
 
-  digitalWrite(ESP8266_LED, HIGH);
+  digitalWrite(ESP8266_LED, LOW);
 
-  MDNS.update();
-  delay(d);
+  updateWiFi();
 }
 
 // TODO:

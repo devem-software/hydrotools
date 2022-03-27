@@ -1,5 +1,5 @@
 // ==================== Librerias para los display
-#include <Wire.h> // Libreria para I2C
+#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 

@@ -19,10 +19,15 @@
 //   Para usar la base de datos de google debe solicitar la creacion del usuario a   //
 //   efmarroquinb@udistrital.edu.co, enviando su correo, y datos del proyecto        //
 // ================================================================================= //
-// ==================== Configuracion Firebase (Datos del proyecto) entregado por el administrador del sistema
-#define DB_NODE "edwin-marroquin"                              // Nombre del nodo donde se almacena la informacion
-#define FIREBASE_EMAIL "efmarroquinb@correo.udistrital.edu.co" // Correo de validacion
-#define FIREBASE_PASS "Maria-0227-"                            // Contraseña de validacion
+
+// ==================== Configuracion Firebase (Datos del proyecto)
+// ==================== suministrado por el administrador del sistema
+// Nombre del nodo donde se almacena la informacion
+#define DB_NODE "edwin-marroquin"
+// Correo de validacion
+#define FIREBASE_EMAIL "efmarroquinb@correo.udistrital.edu.co"
+// Contraseña de validacion
+#define FIREBASE_PASS "Maria-0227-"
 
 
 // ==================== Datos conexion API ThingSpeak

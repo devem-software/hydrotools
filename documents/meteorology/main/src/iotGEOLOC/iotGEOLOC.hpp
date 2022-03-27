@@ -21,11 +21,11 @@ void getGEOLOC()
   // Serial.println(payload);  // Print request response payload
   // http.end();
 
-  location_t loc = location.getGeoFromWiFi();
+  // location_t loc = location.getGeoFromWiFi();
 
-  Serial.println("Location request data");
-  Serial.println(location.getSurroundingWiFiJson());
-  Serial.println("Latitude: " + String(loc.lat, 7));
-  Serial.println("Longitude: " + String(loc.lon, 7));
-  Serial.println("Accuracy: " + String(loc.accuracy));
+  // Serial.println("Location request data");
+  // Serial.println(location.getSurroundingWiFiJson());
+  // Serial.println("Latitude: " + String(loc.lat, 7));
+  // Serial.println("Longitude: " + String(loc.lon, 7));
+  // Serial.println("Accuracy: " + String(loc.accuracy));
 }

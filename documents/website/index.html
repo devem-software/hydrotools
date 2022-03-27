@@ -407,7 +407,7 @@
   async function UpdateDoc() {
 
     await geoLoc();
-    await fetch('http://192.168.88.6/data', {
+    await fetch('/data', {
         method: 'GET',
       }, 60000)
       .then(async r => await r.json())
